@@ -79,7 +79,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
     static final int ACCESS_WIFI = INITIAL_REQUEST + 5;
     static final int ACCESS_INTERNET = INITIAL_REQUEST + 6;
     static final int ACCESS_MICROPHONE = INITIAL_REQUEST + 7;
-    private static final String TAG = "CameraClass";
+    private static final String TAG = "TabActivity";
     private final int CAMERA = 1;
     private final String IMAGE_DIRECTORY = "/demonuts_upload_camera";
 
@@ -179,9 +179,8 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
                 }
                 else
                 {
-                    requests.getImage(profilePicPath);
+                    requests.getImage(profilePicPath,"TabActivity");
                 }
-
                 if(firstime) {
                     firsttimeAudioMenu.show();
                     firsttimeCameraMenu.dismiss();
@@ -194,8 +193,8 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
             }
 
             @Override
-            public void setProfilePicBitmap(Bitmap result) {
-                profilePic = result;
+            public void setTabActivityProfilePicBitmap(Bitmap result) {
+                 profilePic = result;
             }
 
             @Override
@@ -268,9 +267,10 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
 
     }
 
-    private void loadProfile()
+    public void loadProfile()
     {
         Log.d(TAG,"logged in " + "user = " + userObject.toString() );
+        requests = null;
         tabLayout.getTabAt(2).select();
     }
 
@@ -704,7 +704,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
 
     }
 
-    public void setProfilePicBitmap(Bitmap result) {
+    public void setTabActivityProfilePicBitmap(Bitmap result) {
 
     }
 
@@ -713,52 +713,8 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
     }
 
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    FeedTab feedTab = new FeedTab();
-                    return feedTab;
-                case 1:
-                    NotificationTab notificationTab = new NotificationTab();
-                    return notificationTab;
-                case 2:
-                    ProfileTab profileTab = new ProfileTab();
-                    return profileTab;
-                default:
-                    return  null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "";
-                case 1:
-                    return "";
-                case 2:
-                    return "";
-            }
-            return null;
-        }
-    }
     public boolean checkMicPermission() {
         Log.d(TAG,"in check mic permission");
         if (Build.VERSION.SDK_INT >= 23)

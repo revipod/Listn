@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
+import android.view.Window;
 import android.widget.TextView;
 
 /**
@@ -17,9 +18,11 @@ public class DialogBox {
 
     Context context;
     Drawable d;
+    public Dialog recordAudioMenu;
 
     public DialogBox(Context context) {
         this.context = context;
+
     }
 
 
@@ -68,6 +71,14 @@ public class DialogBox {
         TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
         messageView.setGravity(Gravity.CENTER_VERTICAL);
         dialog.show();
+    }
+
+    public void loadingDialog()
+    {
+        recordAudioMenu = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        recordAudioMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        recordAudioMenu.setCancelable(false);
+        recordAudioMenu.setContentView(R.layout.loading_screen);
     }
 
 }

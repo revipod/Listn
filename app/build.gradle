@@ -29,4 +29,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.goebl:david-webb:1.1.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
+    compile 'com.skyfishjy.ripplebackground:library:1.0.1'
 }
