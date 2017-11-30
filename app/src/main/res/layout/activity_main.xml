@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.mohsin.listn.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints"
+    >
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/logoIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="83dp"
+            android:src="@mipmap/soundwavelogo"
+            app:civ_border_color="#d3d3d3"
+            app:civ_border_width="1dp" />
+
+        <EditText
+            android:layout_marginBottom="10dp"
+            android:id="@+id/usernameET"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/centerdot"
+            android:layout_alignEnd="@+id/passwordET"
+            android:layout_alignLeft="@+id/passwordET"
+            android:layout_alignRight="@+id/passwordET"
+            android:layout_alignStart="@+id/passwordET"
+            android:background="@drawable/roundrectangle_solid_gray"
+            android:ems="10"
+            android:hint="username"
+            android:padding="10dp"
+            android:textColorHint="#d3d3d3" />
+
+        <View
+            android:id="@+id/centerdot"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true"
+            android:background="#000000" />
+
+        <EditText
+            android:id="@+id/passwordET"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/loginBTN"
+            android:layout_alignLeft="@+id/loginBTN"
+            android:layout_alignRight="@+id/loginBTN"
+            android:layout_alignStart="@+id/loginBTN"
+            android:layout_below="@+id/centerdot"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/roundrectangle_solid_gray"
+            android:ems="10"
+            android:hint="password"
+            android:padding="10dp"
+            android:textColorHint="#d3d3d3" />
+
+        <TextView
+            android:id="@+id/forgotpassTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/passwordET"
+            android:layout_alignRight="@+id/passwordET"
+            android:layout_below="@+id/passwordET"
+            android:text="Forgot password?" />
+
+        <Button
+            android:id="@+id/loginBTN"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/passwordET"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="50dp"
+            android:background="@drawable/roundrectangle_home"
+            android:text="login"
+            android:textColor="#FFFFFF" />
+
+
+        <Button
+            android:id="@+id/registerBTN"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="#4c4c81"
+            android:gravity="center"
+            android:text="Don't have an account? Sign Up"
+            android:textColor="#ffffff" />
+
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
+
+
+

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#e5e5e5"
+    android:orientation="horizontal" android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:background="@drawable/roundrectangle_background_recordaudiomenu"
+        android:layout_margin="50dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <ImageView
+            android:layout_margin="15dp"
+            android:id="@+id/closeIV"
+            android:src="@mipmap/close"
+            android:layout_width="25dp"
+            android:layout_height="25dp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            android:src="@mipmap/gradientbg" />
+
+        <ImageView
+            android:visibility="invisible"
+            android:id="@+id/recordingcircleIV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/circle_recordaudiomenu" />
+
+
+        <TextView
+            android:id="@+id/timerTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/centerdot"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
+            android:text="00:01/00:20"
+            android:textColor="#000000"
+            android:textSize="30sp"
+            android:textStyle="normal" />
+
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profileIV"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_above="@+id/timerTV"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="14dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@mipmap/mohsin"
+             />
+
+
+
+        <View
+            android:id="@+id/centerdot"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true" />
+
+
+        <ImageView
+            android:visibility="invisible"
+            android:layout_margin="20dp"
+            android:id="@+id/recordstopIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/recordingcircleIV"
+            android:src="@mipmap/whitestop" />
+
+        <ImageView
+            android:layout_margin="20dp"
+            android:id="@+id/recordaudioIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/recordingcircleIV"
+            android:src="@mipmap/recordaudioorange" />
+
+
+
+
+</RelativeLayout>
+</RelativeLayout>

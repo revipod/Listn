@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainRL"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="0dp"
+    tools:ignore="MissingConstraints">
+
+    <TextView
+        android:id="@+id/fullnameTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="93dp"
+        android:fontFamily="casual"
+        android:text="Enter Name and Password"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/emailET"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/fullnameET"
+        android:layout_alignStart="@+id/fullnameET"
+        android:layout_below="@+id/fullnameTV"
+        android:layout_marginTop="55dp"
+        android:background="@drawable/roundrectangle_solid_gray"
+        android:ems="10"
+        android:hint="Email"
+        android:padding="15dp" />
+
+    <EditText
+        android:layout_margin="10dp"
+        android:layout_below="@+id/emailET"
+        android:hint="Full Name"
+        android:id="@+id/fullnameET"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/roundrectangle_solid_gray"
+        android:ems="10"
+        android:padding="15dp" />
+
+
+    <EditText
+        android:id="@+id/passwordET"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/fullnameET"
+        android:layout_alignStart="@+id/fullnameET"
+        android:layout_below="@+id/fullnameET"
+        android:background="@drawable/roundrectangle_solid_gray"
+        android:ems="10"
+        android:hint="Password"
+        android:padding="15dp" />
+
+    <Button
+        android:layout_margin="30dp"
+        android:id="@+id/nextBTN"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/passwordET"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/roundrectangle_home"
+        android:text="Next"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+
+
+
+</RelativeLayout>
