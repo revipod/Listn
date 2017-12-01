@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.skyfishjy.library.RippleBackground;
 
@@ -36,7 +37,13 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     ImageView playIV;
     ImageView stopIV;
     ImageView profileIV;
+    TextView listenersTV;
+    TextView listeningTV;
+    TextView postsTV;
+    TextView usernameTV;
+    TextView fullnameTV;
     String audioPath;
+
 
     JSONObject userObject;
 
@@ -53,12 +60,17 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.profile_tab, container, false);
-        playbtnRL = rootView.findViewById(R.id.playbtnRL);
+        playbtnRL = rootView.findViewById(R.id.profileRL);
         playIV =  rootView.findViewById(R.id.playIV);
         stopIV =  rootView.findViewById(R.id.stopIV);
-        profileIV = (ImageView) rootView.findViewById(R.id.profilePic);
+        profileIV = rootView.findViewById(R.id.profileIV);
+        listenersTV = rootView.findViewById(R.id.listenersTV);
+        listeningTV = rootView.findViewById(R.id.listeningTV);
+        usernameTV = rootView.findViewById(R.id.usernameTV);
+        fullnameTV = rootView.findViewById(R.id.fullnameTV);
+        postsTV = rootView.findViewById(R.id.postsTV);
         dialogBox = new DialogBox(getContext());
-        rippleBackground=(RippleBackground) rootView.findViewById(R.id.rippleview);
+    //    rippleBackground= rootView.findViewById(R.id.rippleview);
         dialogBox.loadingDialog();
 
 
@@ -80,7 +92,8 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        rippleBackground.stopRippleAnimation();
+                     //   rippleBackground.stopRippleAnimation();
+                        profileIV.setAnimation(null);
                         playIV.setVisibility(View.VISIBLE);
                         stopIV.setVisibility(View.INVISIBLE);
                     }
@@ -96,8 +109,8 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
         Log.d(TAG,"Profile Tab userobject = " + userObject.toString());
 
-        //fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
-        //fadeInAnimation.setRepeatMode(Animation.REVERSE);
+        fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
+        fadeInAnimation.setRepeatMode(Animation.REVERSE);
 
 
         setupListeners();
@@ -129,6 +142,10 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                 dialogBox.recordAudioMenu.show();
                 requests.downloadAudio(userObject.getString("profileaudio"));
             }
+            usernameTV.setText( "@" + userObject.getString("username"));
+            fullnameTV.setText(userObject.getString("fullname"));
+            listenersTV.setText(userObject.getJSONArray("followers").length() + "\n Listeners");
+            listeningTV.setText(userObject.getJSONArray("following").length() + "\n Listening");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -142,11 +159,11 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             @Override
             public void onClick(View view) {
                 if(playIV.getVisibility() == View.VISIBLE) {
+                    mediaPlayer.start();
                     playIV.setVisibility(View.INVISIBLE);
                     stopIV.setVisibility(View.VISIBLE);
-                    rippleBackground.startRippleAnimation();
-
-                    //playbtnRL.startAnimation(fadeInAnimation);
+                //    rippleBackground.startRippleAnimation();
+                    profileIV.startAnimation(fadeInAnimation);
                 }
             }
         });
@@ -155,12 +172,12 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             public void onClick(View view) {
                 playIV.setVisibility(View.VISIBLE);
                 stopIV.setVisibility(View.INVISIBLE);
-                rippleBackground.stopRippleAnimation();
+          //      rippleBackground.stopRippleAnimation();
                 if(mediaPlayer.isPlaying())
                 {
                     mediaPlayer.stop();
                 }
-               // playbtnRL.setAnimation(null);
+                profileIV.setAnimation(null);
             }
         });
 
