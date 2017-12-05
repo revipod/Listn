@@ -16,7 +16,7 @@
             android:id="@+id/reviewpostTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/postIV"
+            android:layout_alignBottom="@+id/micIV"
             android:layout_centerHorizontal="true"
             android:text="Review Audio" />
 
@@ -30,8 +30,8 @@
             android:layout_alignParentStart="true" />
 
         <ImageView
-            android:src="@mipmap/check"
-            android:id="@+id/postIV"
+            android:id="@+id/micIV"
+            android:src="@mipmap/recordaudioorange"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_margin="20dp"
@@ -103,8 +103,8 @@
 
         <ImageView
             android:layout_margin="20dp"
-            android:id="@+id/micIV"
-            android:src="@mipmap/recordaudioorange"
+            android:id="@+id/postIV"
+            android:src="@mipmap/check"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"

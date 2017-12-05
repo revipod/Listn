@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
@@ -29,6 +30,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -102,8 +104,8 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
 
 
     String profilePicPath = "blank";
-    String profileaudioPath = "blank";
-    String audioPath;
+    String profileprofileAudioPath = "blank";
+    String profileAudioPath;
     String username;
 
 
@@ -160,7 +162,11 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.BLUE);
+        }
         dialogBox = new DialogBox(this);
 
         tabActivityInterface = new TabActivityInterface() {
@@ -194,7 +200,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
 
             @Override
             public void setTabActivityProfilePicBitmap(Bitmap result) {
-                 profilePic = result;
+                profilePic = result;
             }
 
             @Override
@@ -227,7 +233,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
 
         requests = new TabAsyncRequests(tabActivityInterface);
         Intent intent = getIntent();
-        audioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio.3gp");
+        profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
 
         try {
             userObject = new JSONObject(intent.getStringExtra("User"));
@@ -260,6 +266,46 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
             tabLayout.getTabAt(0).setIcon(R.mipmap.audiofeed);
             tabLayout.getTabAt(1).setIcon(R.mipmap.notification);
             tabLayout.getTabAt(2).setIcon(R.mipmap.profile);
+            mViewPager.setOffscreenPageLimit(2);
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    int position =  tab.getPosition();
+                    switch(position){
+                        case 0:
+                            tabLayout.getTabAt(0).setIcon(R.mipmap.audiofeedfilled);
+                            break;
+                        case 1:
+                            tabLayout.getTabAt(1).setIcon(R.mipmap.notificationfilled);
+                            break;
+                        case 2:
+                            tabLayout.getTabAt(2).setIcon(R.mipmap.profilefilled);
+                            break;
+                    }
+
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                    int position =  tab.getPosition();
+                    switch(position){
+                        case 0:
+                            tabLayout.getTabAt(0).setIcon(R.mipmap.audiofeed);
+                            break;
+                        case 1:
+                            tabLayout.getTabAt(1).setIcon(R.mipmap.notification);
+                            break;
+                        case 2:
+                            tabLayout.getTabAt(2).setIcon(R.mipmap.profile);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
             firstime = false;
             loadProfile();
         }
@@ -326,13 +372,13 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
         skipAudioTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    firsttimeAudioMenu.dismiss();
-                    Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-                    intent.putExtra("User",userObject.toString());
-                    intent.putExtra("loginorRegister","login");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                firsttimeAudioMenu.dismiss();
+                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
+                intent.putExtra("User",userObject.toString());
+                intent.putExtra("loginorRegister","login");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -382,9 +428,8 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
         recordaudioIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String audioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio.3gp";
                 try {
-                    audioRecorder = new RecordAudio(audioPath);
+                    audioRecorder = new RecordAudio(profileAudioPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -479,7 +524,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
         ImageView postIV = playAudioMenu.findViewById(R.id.postIV);
 
         profileIV.setImageBitmap(profilePic);
-        mediaPlayer = MediaPlayer.create(this, Uri.parse(audioPath));
+        mediaPlayer = MediaPlayer.create(this, Uri.parse(profileAudioPath));
         MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
         metaRetriever.setDataSource(Environment.getExternalStorageDirectory().getAbsolutePath() + "/myaudio.3gp");
         String duration = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -574,7 +619,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
             public void onClick(View view) {
 
                 try {
-                    requests.setProfileAudio(audioPath,username);
+                    requests.setProfileAudio(profileAudioPath,username);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

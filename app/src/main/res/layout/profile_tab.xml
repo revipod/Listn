@@ -2,326 +2,316 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainRL"
-    android:background="#d3d3d3"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#d9d9d9"
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/profileRL"
-        android:layout_width="fill_parent"
-        android:layout_height="500dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        android:background="@drawable/roundrectangle_background_recordaudiomenu">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:background="@drawable/halfrectangle">
-
-            <ImageView
-                android:id="@+id/settingsIV"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="10dp"
-                android:src="@mipmap/settings" />
-
-            <ImageView
-                android:id="@+id/adduserIV"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_margin="10dp"
-                android:src="@mipmap/adduser" />
-
-        </RelativeLayout>
-
-        <View
-            android:id="@+id/centerdot"
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            android:layout_centerInParent="true"
-            android:layout_margin="10dp" />
-
-
-        <TextView
-            android:id="@+id/usernameTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/profileIV"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="/@monaax3"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-
-        <TextView
-            android:id="@+id/fullnameTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/centerdot"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="Momina Qureshi"
-            android:textColor="#000000"
-            android:textSize="15sp" />
-
-        <LinearLayout
-
-            android:id="@+id/listenersholderLL"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/fullnameTV"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/listenersTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="213 \n Listeners" />
-
-            <TextView
-                android:id="@+id/postsTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="15 \n Posts" />
-
-            <TextView
-                android:id="@+id/listeningTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="54 \n Listening" />
-
-
-        </LinearLayout>
-
-        <!--
-                <cofm.skyfishjy.library.RippleBackground
-                    android:layout_margin="20dp"
-                    android:layout_below="@+id/fullnameTV"
-                    android:layout_centerHorizontal="true"
-                    android:id="@+id/rippleview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    app:rb_color="#ffedcc"
-                    app:rb_duration="2000"
-                    app:rb_radius="32dp"
-                    app:rb_rippleAmount="4"
-                    app:rb_scale="6">
-
-
-                </com.skyfishjy.library.RippleBackground>-->
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileIV"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
-            android:layout_above="@+id/fullnameTV"
-            android:layout_centerHorizontal="true"
-            android:background="?attr/selectableItemBackground"
-            android:src="@mipmap/starynight"
-            app:civ_border_color="#b2b2ff"
-            app:civ_border_width="2dp" />
-
-
-        <ImageView
-            android:id="@+id/stopIV"
+            android:layout_marginTop="3dp"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/halfrectanglepressed"
-            android:src="@mipmap/profilestop"
-            android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/playIV"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/halfrectanglebottom"
-            android:src="@mipmap/profileplay" />
-
-        <TextView
-            android:id="@+id/bioTV"
-            android:layout_width="250dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/listenersholderLL"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="38dp"
-            android:gravity="center"
-            android:text="I love gaming and working out. Add me on snapchat at ipodrev. Hit that Listn Button for more!"
-            android:textSize="15sp" />
-
-        <!--<LinearLayout
-            android:id="@+id/listenersholderLL"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/listenersTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="213 \n Listeners"
-                android:textColor="#000000" />
-
-            <TextView
-                android:id="@+id/postsTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="15 \n Posts"
-                android:textColor="#000000" />
-
-            <TextView
-                android:id="@+id/listeningTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="54 \n Listening"
-                android:textColor="#000000" />
+            android:layout_height="match_parent">
 
 
-        </LinearLayout>-->
-
-        <!--
-    <LinearLayout
-            android:id="@+id/listenersholderLL"
-            android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/listenersTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="213 \n Listeners"
-                android:textColor="#000000" />
-
-            <TextView
-                android:id="@+id/postsTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="15 \n Posts"
-                android:textColor="#000000" />
-
-            <TextView
-                android:id="@+id/listeningTV"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:gravity="center"
-                android:text="54 \n Listening"
-                android:textColor="#000000" />
+            <RelativeLayout
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:id="@+id/profileRL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
 
 
-        </LinearLayout>
+                android:background="#ffffff">
 
 
+                <RelativeLayout
+                    android:id="@+id/topbarRL"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:background="#f2f2f2">
+
+                    <ImageView
+                        android:id="@+id/settingsIV"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginRight="12dp"
+                        android:layout_weight="1"
+                        android:src="@mipmap/settings" />
+
+                    <ImageView
+                        android:id="@+id/adduserIV"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignTop="@+id/settingsIV"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginStart="14dp"
+                        android:src="@mipmap/adduser" />
 
 
+                </RelativeLayout>
 
-
-
-            <TextView
-                android:textColor="#000000"
-                android:gravity="center"
-                android:text="213 \n Listeners"
-                android:id="@+id/listenersTV"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-
-            <TextView
-                android:textColor="#000000"
-                android:gravity="center"
-                android:text="15 \n Posts"
-                android:id="@+id/postsTV"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-
-            <TextView
-                android:textColor="#000000"
-                android:gravity="center"
-                android:text="54 \n Listening"
-                android:id="@+id/listeningTV"
-                android:background="@drawable/flatrectangle_profiletab"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-
-
-
-
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profileIV"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_below="@+id/topbarRL"
+                    android:layout_margin="20dp"
+                    android:src="@mipmap/mohsin"
+                    app:civ_border_color="#d3d3d3"
+                    app:civ_border_width="2dp" />
 
 
                 <View
-                    android:layout_centerInParent="true"
                     android:id="@+id/centerdot"
                     android:layout_width="1dp"
-                    android:layout_height="1dp" />
--->
+                    android:layout_height="1dp"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="10dp" />
 
 
-    </RelativeLayout>
+                <TextView
+                    android:id="@+id/usernameTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/playIV"
+                    android:layout_below="@id/profileIV"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center"
+                    android:text="revipod"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/fullnameTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/playIV"
+                    android:layout_alignLeft="@+id/profileIV"
+                    android:layout_alignStart="@+id/profileIV"
+                    android:text="Mohsin Abbasi"
+                    android:textColor="#a0a0a0"
+                    android:textSize="15sp" />\
+
+
+                <LinearLayout
+                    android:layout_alignTop="@+id/profileIV"
+                    android:layout_below="@+id/topbarRL"
+                    android:layout_toEndOf="@+id/profileIV"
+                    android:id="@+id/listenersholderLL"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/profileIV"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/listenersTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:text="213 \nListeners"
+                        android:textColor="#909090"
+                        android:textSize="18sp" />
+
+
+                    <TextView
+                        android:id="@+id/postsTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:text="15 \nPosts"
+                        android:textColor="#909090"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/listeningTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="left"
+                        android:text="54 \nListening"
+                        android:textColor="#909090"
+                        android:textSize="18sp" />
+
+
+                </LinearLayout>
 
 
 
-            <!--  <ListView
-                    android:background="#d3d3d3"
-                    android:layout_below="@+id/profileRL"
+                <!--
+                  <cofm.skyfishjy.library.RippleBackground
+                      android:layout_margin="20dp"
+                      android:layout_below="@+id/fullnameTV"
+                      android:layout_centerHorizontal="true"
+                      android:id="@+id/rippleview"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_centerInParent="true"
+                      app:rb_color="#ffedcc"
+                      app:rb_duration="2000"
+                      app:rb_radius="32dp"
+                      app:rb_rippleAmount="4"
+                      app:rb_scale="6">
+
+
+                  </com.skyfishjy.library.RippleBackground>-->
+
+
+                <ImageView
+                    android:id="@+id/stopIV"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignLeft="@+id/profileIV"
+                    android:layout_alignStart="@+id/profileIV"
+                    android:layout_below="@+id/profileIV"
+                    android:src="@mipmap/profilestop"
+                    android:visibility="invisible" />
+
+                <ImageView
+                    android:id="@+id/playIV"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignLeft="@+id/profileIV"
+                    android:layout_alignStart="@+id/profileIV"
+                    android:layout_below="@+id/profileIV"
+                    android:src="@mipmap/profileplay" />
+
+                <TextView
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/bioTV"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/profileIV"
+                    android:layout_alignStart="@+id/profileIV"
+                    android:layout_below="@+id/fullnameTV"
+                    android:gravity="left"
+                    android:text="I love gaming and working out. Add me on snapchat at ipodrev. Hit that Listn Button for more!"
+                    android:textColor="#a0a0a0"
+                    android:textSize="15sp" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_below="@+id/profileRL"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:id="@+id/onyourmindLL"
+                android:layout_width="fill_parent"
+                android:layout_height="70dp"
+                android:background="#ffffff">
+
+                <RelativeLayout
+                    android:id="@+id/micpostRL"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/flatrectangle_profiletab">
+
+                    <ImageView
+                        android:id="@+id/newmicIV"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/micbtn" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/newmicIV"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="2dp"
+                        android:text="Voice Post"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/imagepostRL"
+                    android:background="@drawable/flatrectangle_profiletab"
+                    android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
 
 
-                </ListView>-->
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:id="@+id/newcameraIV"
+                        android:src="@mipmap/camerabtn"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp" />
 
-            </RelativeLayout>
+                    <TextView
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:layout_margin="2dp"
+                        android:layout_below="@+id/newcameraIV"
+                        android:layout_centerHorizontal="true"
+                        android:text="Image Post"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/textpostRL"
+                    android:background="@drawable/flatrectangle_profiletab"
+                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:id="@+id/newtextIV"
+                        android:src="@mipmap/writebtn"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp" />
+
+                    <TextView
+                        android:textColor="#666666"
+                        android:textSize="14sp"
+                        android:layout_margin="2dp"
+                        android:layout_below="@+id/newtextIV"
+                        android:layout_centerHorizontal="true"
+                        android:text="Text Post"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+            <ListView
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:background="#ffffff"
+                android:layout_below="@+id/onyourmindLL"
+                android:layout_width="fill_parent"
+                android:layout_height="500dp">
+
+
+            </ListView>
+        </RelativeLayout>
+
+
+    </ScrollView>
+period
+</RelativeLayout>
