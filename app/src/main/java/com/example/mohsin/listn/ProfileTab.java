@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -26,6 +27,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -37,7 +39,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Mohsin on 11/21/2017.
@@ -68,6 +75,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     TextView currentTimeTV;
     String profileAudioPath;
     String audioPostPath;
+    String newPostID;
 
     SeekBar seekBar;
 
@@ -81,6 +89,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
 
     JSONObject userObject;
+    JSONObject postObject;
 
     Bitmap profilePic;
 
@@ -94,6 +103,9 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     DialogBox dialogBox;
     Dialog recordAudioMenu;
     Dialog playAudioMenu;
+
+    ListView profileLV;
+    ProfileAdapter adapter;
 
 
 
@@ -115,6 +127,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         usernameTV = rootView.findViewById(R.id.usernameTV);
         fullnameTV = rootView.findViewById(R.id.fullnameTV);
         postsTV = rootView.findViewById(R.id.postsTV);
+        profileLV = rootView.findViewById(R.id.profileLV);
         dialogBox = new DialogBox(getContext());
         isPlaying = false;
         //    rippleBackground= rootView.findViewById(R.id.rippleview);
@@ -122,12 +135,15 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
 
         userObject = ((TabActivity) getActivity()).userObject;
+        postObject = ((TabActivity) getActivity()).postObject;
         profileTabInterface = new ProfileTabInterface() {
             @Override
             public void setProfileTabProfilePic(Bitmap result) {
                 profilePic = result;
                 profileIV.setImageBitmap(profilePic);
                 dialogBox.recordAudioMenu.dismiss();
+                adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
+                profileLV.setAdapter(adapter);
             }
 
             @Override
@@ -143,15 +159,35 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                         stopIV.setVisibility(View.INVISIBLE);
                     }
                 });
+                try {
+                    if(postObject.getJSONArray("postSource").length() > 0)
+                    {
+                        requests.downloadAudioArray(postObject.getJSONArray("postSource"),postObject.getJSONArray("postType"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void loadListView(ArrayList<String> audioFileList) {
+              for(int i = 0; i < audioFileList.size(); i++)
+                  try {
+                      adapter.add(new ProfileDataProvider(userObject.getString("username"),audioFileList.get(i), (String) postObject.getJSONArray("postDate").get(i)));
+                  } catch (JSONException e) {
+                      e.printStackTrace();
+                  }
             }
 
         };
+
         requests = new TabAsyncRequests(profileTabInterface);
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
         audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + generateID() + ".3gp";
 
 
-        Log.d(TAG,"Profile Tab userobject = " + userObject.toString());
+        Log.d(TAG,"userobject = " + userObject.toString());
+        Log.d(TAG,"postobject = " + postObject.toString());
 
         fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
         fadeInAnimation.setRepeatMode(Animation.REVERSE);
@@ -205,6 +241,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             e.printStackTrace();
         }
 
+
     }
 
 
@@ -230,16 +267,11 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             @Override
             public void onClick(View view) {
                 if(!profilemediaPlayer.isPlaying()) {
-                    if(profileplayIV.getVisibility() == View.VISIBLE)
-                    {profileplayIV.setVisibility(View.INVISIBLE); Log.d(TAG,"playiv is visible");}
-                    else {Log.d(TAG,"playiv is invisible");}
-
                     profileplayIV.setVisibility(View.INVISIBLE);
                     stopIV.setVisibility(View.VISIBLE);
                     profilemediaPlayer.start();
                     profileIV.startAnimation(fadeInAnimation);
                     //    rippleBackground.startRippleAnimation();
-
                 }
             }
         });
@@ -252,7 +284,6 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                     profilemediaPlayer.reset();
                     profileIV.setAnimation(null);
                     gotProfileAudio();
-
                     //      rippleBackground.stopRippleAnimation();
 
 
@@ -276,6 +307,11 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                 stopIV.setVisibility(View.INVISIBLE);
             }
         });
+
+    }
+
+    @Override
+    public void loadListView(ArrayList<String> audioFileList) {
 
     }
 
@@ -324,6 +360,8 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             @Override
             public void onClick(View view) {
                 try {
+                    newPostID = generateID();
+                    audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + newPostID + ".3gp";
                     audioRecorder = new RecordAudio(audioPostPath);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -418,6 +456,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         ImageView micIV = playAudioMenu.findViewById(R.id.micIV);
         ImageView profileIV = playAudioMenu.findViewById(R.id.profileIV);
         ImageView postIV = playAudioMenu.findViewById(R.id.postIV);
+
 
         profileIV.setImageBitmap(profilePic);
         postmediaPlayer = MediaPlayer.create(getContext(), Uri.parse(audioPostPath));
@@ -514,12 +553,16 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         postIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-           /*     try {
-                    requests.setProfileAudio(audioPath,username);
+              try {
+                  JSONObject headers = new JSONObject();
+                  String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                  headers.put("date",currentDateTimeString);
+                  headers.put("username",userObject.getString("username"));
+                  headers.put("audiofilename",newPostID);
+                    requests.uploadAudioPost(audioPostPath,headers.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
             }
         });
 

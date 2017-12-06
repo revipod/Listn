@@ -216,9 +216,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     public void loginUser(JSONObject result) throws JSONException {
         if(result.getBoolean("loggedin")){
             JSONObject newUser;
+            JSONObject postData = null;
             newUser = result.getJSONObject("user");
+            if(result.has("posts")) postData = result.getJSONObject("posts");
             Intent intent = new Intent(getApplicationContext(), TabActivity.class);
             intent.putExtra("User",newUser.toString());
+            if(postData!=null) intent.putExtra("postData",postData.toString());
             intent.putExtra("loginorRegister","login");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

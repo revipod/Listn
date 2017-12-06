@@ -130,6 +130,7 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
     ImageView pauseIV;
 
     JSONObject userObject;
+    JSONObject postObject;
 
     public Runnable runnable = new Runnable() {
 
@@ -236,6 +237,10 @@ public class TabActivity extends AppCompatActivity implements TabActivityInterfa
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
 
         try {
+            if(intent.hasExtra("postData"))
+            {
+                postObject = new JSONObject(intent.getStringExtra("postData"));
+            }
             userObject = new JSONObject(intent.getStringExtra("User"));
             username = userObject.getString("username");
         } catch (JSONException e) {
