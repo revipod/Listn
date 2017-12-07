@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -28,7 +27,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -40,8 +38,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -94,7 +90,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     Bitmap profilePic;
 
     ProfileTabInterface profileTabInterface;
-    TabAsyncRequests requests;
+    ProfileAsyncRequests requests;
     MediaPlayer postmediaPlayer;
     MediaPlayer profilemediaPlayer;
 
@@ -141,7 +137,6 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             public void setProfileTabProfilePic(Bitmap result) {
                 profilePic = result;
                 profileIV.setImageBitmap(profilePic);
-                dialogBox.recordAudioMenu.dismiss();
                 adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
                 profileLV.setAdapter(adapter);
             }
@@ -181,13 +176,12 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
         };
 
-        requests = new TabAsyncRequests(profileTabInterface);
+        requests = new ProfileAsyncRequests(profileTabInterface);
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
         audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + generateID() + ".3gp";
 
 
         Log.d(TAG,"userobject = " + userObject.toString());
-        Log.d(TAG,"postobject = " + postObject.toString());
 
         fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
         fadeInAnimation.setRepeatMode(Animation.REVERSE);
@@ -201,25 +195,22 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
     private void setupProfile() {
         try {
-            if(userObject.getString("profilepic").contains("Nopicture"))
+            if(userObject.getString("profilepic").contains("NoPicture"))
             {
-
                 profilePic = BitmapFactory.decodeResource(getContext().getResources(),
                         R.mipmap.noprofilepic);
                 profileIV.setImageBitmap(profilePic);
             }
             else
             {
-                dialogBox.recordAudioMenu.show();
                 requests.getImage(userObject.getString("profilepic"),"ProfileTab");
             }
-            if(userObject.getString("profileaudio").contains("Noaudio"))
+            if(userObject.getString("profileaudio").contains("NoAudio"))
             {
 
             }
             else
             {
-                dialogBox.recordAudioMenu.show();
                 requests.downloadAudio(userObject.getString("profileaudio"));
             }
             usernameTV.setText( "@" + userObject.getString("username"));
@@ -266,18 +257,29 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         profileplayIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!profilemediaPlayer.isPlaying()) {
-                    profileplayIV.setVisibility(View.INVISIBLE);
-                    stopIV.setVisibility(View.VISIBLE);
-                    profilemediaPlayer.start();
-                    profileIV.startAnimation(fadeInAnimation);
-                    //    rippleBackground.startRippleAnimation();
+                try {
+                    if(!userObject.getString("profileaudio").contains("NoAudio")) {
+                        if (!profilemediaPlayer.isPlaying()) {
+                            profileplayIV.setVisibility(View.INVISIBLE);
+                            stopIV.setVisibility(View.VISIBLE);
+                            profilemediaPlayer.start();
+                            profileIV.startAnimation(fadeInAnimation);
+                            //    rippleBackground.startRippleAnimation();
+                        }
+                    }
+                    else
+                    {
+                        dialogBox.createDialog("No Audio","It seems as tho you have not recorded a profile audio clip. Press the settings button on the top right to do so","bad");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });
         stopIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (profilemediaPlayer.isPlaying()) {
                     profileplayIV.setVisibility(View.VISIBLE);
                     stopIV.setVisibility(View.INVISIBLE);
                     profilemediaPlayer.stop();
@@ -285,8 +287,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                     profileIV.setAnimation(null);
                     gotProfileAudio();
                     //      rippleBackground.stopRippleAnimation();
-
-
+                }
             }
         });
 

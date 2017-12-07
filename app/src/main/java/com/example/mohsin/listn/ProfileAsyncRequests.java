@@ -29,27 +29,21 @@ import java.util.ArrayList;
  * Created by Mohsin on 11/22/2017.
  */
 
-class TabAsyncRequests {
+class ProfileAsyncRequests {
 
     ProgressDialog loadingScreen;
 
-    private static final String TAG = "TAB TabAsyncRequests";
+    private static final String TAG = "TAB ProfileAsyncRequests";
 
     //Webb is Lightweight Java HTTP-Client for calling JSON REST-Service
     final Webb webb = Webb.create();
 
     //Server URL to make the request to and from
     String serverURL = "http://10.155.27.245:3000";
-    private TabActivityInterface tabActivityInterface;
     private ProfileTabInterface profileTabInterface;
 
-    public TabAsyncRequests(TabActivityInterface listener) {
-        this.tabActivityInterface = listener;
-        webb.setBaseUri(serverURL);
 
-    }
-
-    public TabAsyncRequests(ProfileTabInterface listener) {
+    public ProfileAsyncRequests(ProfileTabInterface listener) {
         this.profileTabInterface = listener;
         webb.setBaseUri(serverURL);
     }
@@ -121,19 +115,19 @@ class TabAsyncRequests {
 
             @Override
             protected void onPostExecute(JSONObject result) {
-                if (result != null) {
+                /*if (result != null) {
                     try {
-                        if (result.getBoolean("uploaded")) {
+                      *//*  if (result.getBoolean("uploaded")) {
                             tabActivityInterface.setprofileImagePath(result.getString("profilepicPath"));
                             Log.d(TAG, "profilePicPath is = " + result.getString("profilepicPath"));
                         } else {
                             tabActivityInterface.problemSettingProfilePic();
-                        }
+                        }*//*
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                }
+                }*/
             }
         }.execute();
     }
@@ -165,9 +159,7 @@ class TabAsyncRequests {
             @Override
             protected void onPostExecute(Bitmap result) {
                 //Setting the signature only if it was found in the object
-                if (type.contains("TabActivity"))
-                    tabActivityInterface.setTabActivityProfilePicBitmap(result);
-                else if (type.contains("ProfileTab"))
+                if (type.contains("ProfileTab"))
                     profileTabInterface.setProfileTabProfilePic(result);
             }
         }.execute();
@@ -244,7 +236,7 @@ class TabAsyncRequests {
 
             @Override
             protected void onPostExecute(JSONObject result) {
-                if (result != null) {
+                /*if (result != null) {
                     try {
                         if (result.getBoolean("uploaded")) {
                             tabActivityInterface.setprofileAudioPath(result);
@@ -256,7 +248,7 @@ class TabAsyncRequests {
                         e.printStackTrace();
                     }
                 } else {
-                }
+                }*/
             }
         }.execute();
     }

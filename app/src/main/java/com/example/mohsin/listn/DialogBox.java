@@ -18,7 +18,7 @@ public class DialogBox {
 
     Context context;
     Drawable d;
-    public Dialog recordAudioMenu;
+    public Dialog loadingScreen;
 
     public DialogBox(Context context) {
         this.context = context;
@@ -75,10 +75,10 @@ public class DialogBox {
 
     public void loadingDialog()
     {
-        recordAudioMenu = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        recordAudioMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        recordAudioMenu.setCancelable(false);
-        recordAudioMenu.setContentView(R.layout.loading_screen);
+        loadingScreen = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        loadingScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        loadingScreen.setCancelable(false);
+        loadingScreen.setContentView(R.layout.loading_screen);
     }
 
 }
