@@ -2,6 +2,9 @@ package com.example.mohsin.listn;
 
 import android.graphics.Bitmap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -10,7 +13,14 @@ import java.util.ArrayList;
 
 public interface ProfileTabInterface
 {
-   public void setProfileTabProfilePic(Bitmap result);
-   public void gotProfileAudio();
-   public void loadListView(ArrayList<String> audioFileList);
+    void setProfileTabProfilePic(Bitmap result);
+    void gotProfileAudio();
+    void loadListView(ArrayList<String> audioFileList);
+    void setprofileImagePath(JSONObject user);
+    void problemSettingProfilePic();
+    void setSettingProfilePic(Bitmap result);
+
+    void changeSettings(JSONObject result) throws JSONException;
+
+    void problemChangingSettings();
 }

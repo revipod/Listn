@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         usernameET = (EditText) findViewById(R.id.usernameET);
         passwordET = (EditText) findViewById(R.id.passwordET);
         centerView = (View) findViewById(R.id.centerdot);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+   //     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         mainActivityInterface = new MainActivityInterface() {
             @Override
             public void loginUserI(JSONObject result) throws JSONException {

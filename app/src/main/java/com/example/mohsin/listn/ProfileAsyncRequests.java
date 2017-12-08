@@ -33,7 +33,7 @@ class ProfileAsyncRequests {
 
     ProgressDialog loadingScreen;
 
-    private static final String TAG = "TAB ProfileAsyncRequests";
+    private static final String TAG = "TAB ProfileRequests";
 
     //Webb is Lightweight Java HTTP-Client for calling JSON REST-Service
     final Webb webb = Webb.create();
@@ -115,19 +115,18 @@ class ProfileAsyncRequests {
 
             @Override
             protected void onPostExecute(JSONObject result) {
-                /*if (result != null) {
+                if (result != null) {
                     try {
-                      *//*  if (result.getBoolean("uploaded")) {
-                            tabActivityInterface.setprofileImagePath(result.getString("profilepicPath"));
-                            Log.d(TAG, "profilePicPath is = " + result.getString("profilepicPath"));
+                      if (result.getBoolean("uploaded")) {
+                            profileTabInterface.setprofileImagePath(result.getJSONObject("user"));
                         } else {
-                            tabActivityInterface.problemSettingProfilePic();
-                        }*//*
+                            profileTabInterface.problemSettingProfilePic();
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                }*/
+                }
             }
         }.execute();
     }
@@ -161,6 +160,8 @@ class ProfileAsyncRequests {
                 //Setting the signature only if it was found in the object
                 if (type.contains("ProfileTab"))
                     profileTabInterface.setProfileTabProfilePic(result);
+                else if(type.contains("Settings"))
+                    profileTabInterface.setSettingProfilePic(result);
             }
         }.execute();
         return null;
@@ -348,5 +349,45 @@ class ProfileAsyncRequests {
         }.execute();
     }
 
+    @SuppressLint("StaticFieldLeak")
+    public void changeProfileSettings(final JSONObject data)
+        {
+            new AsyncTask<JSONObject, Void, JSONObject>() {
+                @Override
+                protected JSONObject doInBackground(JSONObject... params) {
+                    try {
+                        JSONObject response = webb
+                                .post("/changeProfileSettings")
+                                .body(data)
+                                .connectTimeout(10 * 1000)
+                                .asJsonObject()
+                                .getBody();
+                        return response;
+                    } catch (Exception e) {
+                        Log.d(TAG,"EXCEPTION IS = " + e.toString());
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
 
+                @Override
+                protected void onPostExecute(JSONObject result)
+                {
+                    if(result != null)
+                    {
+                        try {
+                            Log.d(TAG,"settings result is = " + result.toString());
+                            profileTabInterface.changeSettings(result);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else
+                        {
+                            profileTabInterface.problemChangingSettings();
+                    }
+                }
+
+            }.execute();
+        }
 }

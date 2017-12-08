@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#d9d9d9"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/topbarRL"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#f2f2f2">
+
+        <ImageView
+            android:id="@+id/saveIV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:src="@mipmap/check" />
+
+        <ImageView
+            android:id="@+id/backIV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/saveIV"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:src="@mipmap/back" />
+
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:fillViewport="true"
+        android:layout_below="@+id/topbarRL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_below="@+id/topbarRL"
+            android:id="@+id/mainRL"
+            android:background="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/settingprofileIV"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="26dp"
+                android:src="@mipmap/mohsin"
+                app:civ_border_color="#d3d3d3"
+                app:civ_border_width="2dp" />
+
+            <Button
+                android:background="@drawable/halfrectanglebottom"
+                android:textColor="#FFFFFF"
+                android:layout_margin="10dp"
+                android:layout_below="@+id/settingprofileIV"
+                android:layout_centerHorizontal="true"
+                android:text="Change Picture"
+                android:id="@+id/changepicBTN"
+                android:layout_width="200dp"
+                android:layout_height="40dp" />
+
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/fullnameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/changepicBTN"
+                android:layout_marginTop="11dp"
+                android:layout_toLeftOf="@+id/changepicBTN"
+                android:layout_toStartOf="@+id/changepicBTN"
+                android:text="Name"
+                android:textSize="15sp" />
+
+            <EditText
+                android:textSize="15sp"
+                android:hint="Mohsin Abbasi"
+                android:layout_below="@id/fullnameTV"
+                android:layout_alignStart="@+id/fullnameTV"
+                android:id="@+id/fullnameET"
+                android:layout_marginRight="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/fullnameTV" />
+
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/usernameTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fullnameET"
+                android:layout_marginTop="10dp"
+                android:layout_alignStart="@+id/fullnameTV"
+                android:text="Username"
+                android:textSize="15sp"
+                android:layout_alignLeft="@+id/fullnameTV" />
+
+            <EditText
+                android:textSize="15sp"
+                android:hint="revipod"
+                android:layout_below="@id/usernameTV"
+                android:layout_alignStart="@+id/usernameTV"
+                android:id="@+id/usernameET"
+                android:layout_marginRight="30dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/fullnameTV" />
+
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/aboutmeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usernameET"
+                android:layout_marginTop="10dp"
+                android:layout_alignStart="@+id/usernameTV"
+                android:text="About me"
+                android:textSize="15sp"
+                android:layout_alignLeft="@+id/fullnameTV" />
+
+            <EditText
+                android:inputType="textMultiLine"
+                android:layout_marginRight="30dp"
+                android:id="@+id/aboutmeET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/aboutmeTV"
+                android:layout_alignStart="@+id/aboutmeTV"
+                android:layout_below="@+id/aboutmeTV"
+                android:hint="I love gaming and working out. Add me on snapchat at ipodrev. Hit that Listn Button for more!"
+                android:textSize="15sp" />
+
+
+            <Button
+                android:id="@+id/logoutBTN"
+                android:textStyle="bold"
+                android:text="Logout"
+                android:textColor="#ffffff"
+                android:background="#d3d3d3"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+</RelativeLayout>

@@ -3,11 +3,13 @@ package com.example.mohsin.listn;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +27,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -36,6 +40,9 @@ import com.skyfishjy.library.RippleBackground;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -49,6 +56,10 @@ import java.util.Date;
 public class ProfileTab extends Fragment implements ProfileTabInterface{
 
     private static final String TAG = "PROFILETAB";
+    private final int CAMERA = 1;
+    private final String IMAGE_DIRECTORY = "/demonuts_upload_camera";
+
+
     Animation fadeInAnimation;
     RippleBackground rippleBackground;
     RelativeLayout playbtnRL;
@@ -61,6 +72,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     ImageView stopIV;
     ImageView pauseIV;
     ImageView profileIV;
+    ImageView settingprofileIV;
     ImageView settingsIV;
     TextView listenersTV;
     TextView listeningTV;
@@ -68,7 +80,13 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     TextView usernameTV;
     TextView fullnameTV;
     TextView timerTV;
+    TextView bioTV;
     TextView currentTimeTV;
+    EditText fullnameET;
+    EditText usernameET;
+    EditText aboutmeET;
+
+
     String profileAudioPath;
     String audioPostPath;
     String newPostID;
@@ -99,9 +117,12 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     DialogBox dialogBox;
     Dialog recordAudioMenu;
     Dialog playAudioMenu;
+    Dialog settingsMenu;
 
     ListView profileLV;
     ProfileAdapter adapter;
+
+
 
 
 
@@ -122,6 +143,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         listeningTV = rootView.findViewById(R.id.listeningTV);
         usernameTV = rootView.findViewById(R.id.usernameTV);
         fullnameTV = rootView.findViewById(R.id.fullnameTV);
+        bioTV = rootView.findViewById(R.id.bioTV);
         postsTV = rootView.findViewById(R.id.postsTV);
         profileLV = rootView.findViewById(R.id.profileLV);
         dialogBox = new DialogBox(getContext());
@@ -174,6 +196,53 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                   }
             }
 
+            @Override
+            public void setprofileImagePath(JSONObject user) {
+                userObject = user;
+                try {
+                    requests.getImage(user.getString("profilepic"),"Settings");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void problemSettingProfilePic() {
+
+            }
+
+            @Override
+            public void setSettingProfilePic(Bitmap result) {
+                profilePic = result;
+                profileIV.setImageBitmap(result);
+                settingprofileIV.setImageBitmap(profilePic);
+                adapter.profilePic = result;
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void changeSettings(JSONObject result) throws JSONException {
+                JSONObject user = result.getJSONObject("user");
+                userObject = user;
+                if(result.has("existed")) {
+                    if (result.getBoolean("existed")) {
+                        dialogBox.createDialog("Already Exists", "Sorry but a person is already using that username", "bad");
+                    } else
+                    dialogBox.createDialog("New username", "Your new username is " + user.getString("username"), "good");
+                    usernameET.setText(user.getString("username"));
+                    usernameTV.setText(user.getString("username"));
+                }
+                fullnameET.setText(user.getString("fullname"));
+                aboutmeET.setText(user.getString("bio"));
+                fullnameTV.setText(user.getString("fullname"));
+                bioTV.setText(user.getString("bio"));
+            }
+
+            @Override
+            public void problemChangingSettings() {
+
+            }
+
         };
 
         requests = new ProfileAsyncRequests(profileTabInterface);
@@ -215,6 +284,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             }
             usernameTV.setText( "@" + userObject.getString("username"));
             fullnameTV.setText(userObject.getString("fullname"));
+            bioTV.setText(userObject.getString("bio"));
             String boldText  = String.valueOf(userObject.getJSONArray("followers").length()) + "\n";
             String normalText = "Listeners";
             SpannableString str = new SpannableString(boldText + normalText);
@@ -239,6 +309,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     private void setupListeners()
     {
 
+
         voicePostRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -251,6 +322,11 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             public void onClick(View view) {
                 Animation spinAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.spinanimation);
                 settingsIV.startAnimation(spinAnimation);
+                try {
+                    loadSettings();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -293,6 +369,132 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
     }
 
+    private void loadSettings() throws JSONException {
+        settingsMenu = new Dialog(getContext(),R.style.CustomDialog);;
+        settingsMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        settingsMenu.setCancelable(true);
+        settingsMenu.setContentView(R.layout.editprofile);
+        settingsMenu.show();
+        final ImageView closeIV = settingsMenu.findViewById(R.id.backIV);
+        final ImageView changeIV = settingsMenu.findViewById(R.id.saveIV);
+        final Button changePicBTN = settingsMenu.findViewById(R.id.changepicBTN);
+        final Button logoutBTN = settingsMenu.findViewById(R.id.logoutBTN);
+        fullnameET = settingsMenu.findViewById(R.id.fullnameET);
+        usernameET = settingsMenu.findViewById(R.id.usernameET);
+        aboutmeET = settingsMenu.findViewById(R.id.aboutmeET);
+        settingprofileIV = settingsMenu.findViewById(R.id.settingprofileIV);
+
+        settingprofileIV.setImageBitmap(profilePic);
+
+        fullnameET.setText(userObject.getString("fullname"));
+        aboutmeET.setText(userObject.getString("bio"));
+        usernameET.setText(userObject.getString("username"));
+
+        changeIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fullnameET.length() > 0 && usernameET.length() > 0)
+                {
+                    JSONObject params = new JSONObject();
+                    try {
+                        params.put("username",userObject.getString("username"));
+                        params.put("fullname",fullnameET.getText().toString().trim());
+                        params.put("newusername",usernameET.getText().toString().trim());
+                        params.put("bio",aboutmeET.getText().toString().trim());
+                        requests.changeProfileSettings(params);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                {
+                    dialogBox.createDialog("Empty Fields","Please make sure you have not left the Name, Username and email field empty.","bad");
+                }
+            }
+        });
+
+        closeIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                settingsMenu.dismiss();
+            }
+        });
+
+        logoutBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                settingsMenu.dismiss();
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
+
+        changePicBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setProfilePic();
+            }
+        });
+    }
+
+
+
+    private void setProfilePic() {
+        Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        this.startActivityForResult(intent, CAMERA);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == getActivity().RESULT_CANCELED) {
+            return;
+        }
+        if (requestCode == CAMERA) {
+            Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            String path = saveImage(thumbnail);
+            thumbnail.recycle();
+            try {
+                Log.d(TAG,"calling async upload");
+                requests.changeProfilePic(path,userObject.getString("username"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String saveImage(Bitmap myBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        File wallpaperDirectory = new File(
+                Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
+        // have the object build the directory structure, if needed.
+        if (!wallpaperDirectory.exists()) {
+            wallpaperDirectory.mkdirs();
+        }
+
+        try {
+            File f = new File(wallpaperDirectory, Calendar.getInstance()
+                    .getTimeInMillis() + ".jpg");
+            Log.d(TAG,"file f = " + f.getAbsoluteFile());
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            MediaScannerConnection.scanFile(getActivity(),
+                    new String[]{f.getPath()},
+                    new String[]{"image/jpeg"}, null);
+            fo.close();
+            Log.d(TAG, "File Saved::--->" + f.getAbsolutePath());
+            myBitmap.recycle();
+            return f.getAbsolutePath();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return "";
+    }
+
     public void setProfileTabProfilePic(Bitmap result) {
 
     }
@@ -311,8 +513,29 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
     }
 
-    @Override
+
     public void loadListView(ArrayList<String> audioFileList) {
+
+    }
+
+    public void setprofileImagePath(JSONObject user) {
+
+    }
+
+
+    public void problemSettingProfilePic() {
+
+    }
+
+    public void setSettingProfilePic(Bitmap result) {
+
+    }
+
+    public void changeSettings(JSONObject result) {
+
+    }
+
+    public void problemChangingSettings() {
 
     }
 
