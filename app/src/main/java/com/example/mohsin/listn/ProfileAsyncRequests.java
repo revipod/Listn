@@ -212,50 +212,7 @@ class ProfileAsyncRequests {
 
 
     @SuppressLint("StaticFieldLeak")
-    public void setProfileAudio(final String audioPath, final String username) throws Exception {
-        Log.d(TAG, "About to upload Image");
-        new AsyncTask<JSONObject, Void, JSONObject>() {
-
-            @Override
-            protected JSONObject doInBackground(JSONObject... jsonObjects) {
-                try {
-                    JSONObject result = webb
-                            .post("/setProfileAudio")
-                            .body(new File(audioPath))
-                            .header("username", username)
-                            .connectTimeout(10 * 1000)
-                            .asJsonObject()
-                            .getBody();
-                    Log.d(TAG, "RESULT: " + result);
-                    return result;
-                } catch (Exception e) {
-                    Log.d(TAG, "EXCEPTION IS = " + e.toString());
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(JSONObject result) {
-                /*if (result != null) {
-                    try {
-                        if (result.getBoolean("uploaded")) {
-                            tabActivityInterface.setprofileAudioPath(result);
-                            Log.d(TAG, "profileaudioPath is = " + result.getString("profileaudioPath"));
-                        } else {
-                            tabActivityInterface.problemSettingProfilePic();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                }*/
-            }
-        }.execute();
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public void downloadAudio(final String path)
+    public void downloadAudio(final String path, final String profile)
     {
         new AsyncTask<String, Void, String>() {
             @Override
@@ -287,7 +244,7 @@ class ProfileAsyncRequests {
             @Override
             protected void onPostExecute(String result)
             {
-                profileTabInterface.gotProfileAudio();
+                profileTabInterface.gotProfileAudio(profile);
             }
         }.execute();
     }
@@ -390,4 +347,47 @@ class ProfileAsyncRequests {
 
             }.execute();
         }
+
+    @SuppressLint("StaticFieldLeak")
+    public void setProfileAudio(final String audioPath, final String username) throws Exception {
+        Log.d(TAG, "About to upload Image");
+        new AsyncTask<JSONObject, Void, JSONObject>() {
+
+            @Override
+            protected JSONObject doInBackground(JSONObject... jsonObjects) {
+                try {
+                    JSONObject result = webb
+                            .post("/setProfileAudio")
+                            .body(new File(audioPath))
+                            .header("username", username)
+                            .connectTimeout(10 * 1000)
+                            .asJsonObject()
+                            .getBody();
+                    Log.d(TAG, "RESULT: " + result);
+                    return result;
+                } catch (Exception e) {
+                    Log.d(TAG, "EXCEPTION IS = " + e.toString());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(JSONObject result) {
+                if (result != null) {
+                    try {
+                        if (result.getBoolean("uploaded")) {
+                            downloadAudio(result.getJSONObject("user").getString("profileaudio"),"profile");
+                            Log.d(TAG, "profileaudioPath is = " + result.getJSONObject("user").getString("profileaudioPath"));
+                        } else {
+                            profileTabInterface.problemProfileAudioPath();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                }
+            }
+        }.execute();
+    }
 }

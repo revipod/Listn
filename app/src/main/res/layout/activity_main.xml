@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#d9d9d9">
 
+    <ProgressBar
+    android:layout_alignParentTop="true"
+    android:visibility="gone"
+    android:id="@+id/progressbar"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_width="match_parent"
+    android:layout_height="10dp"
+    android:indeterminate="true"
+    android:max="100"
+    android:backgroundTint="#FFFFFF"
+    android:indeterminateTint="#1a09d6"
+    />
 
-        <RelativeLayout
-            android:fitsSystemWindows="true"
+
+
+    <RelativeLayout
+            android:layout_below="@+id/progressbar"
+            android:id="@+id/mainRL"
             android:layout_above="@+id/registerBTN"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#ffffff">
+
+
 
 
             <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,14 +45,11 @@
                 app:civ_border_width="1dp" />
 
             <EditText
+                android:layout_centerHorizontal="true"
                 android:id="@+id/usernameET"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/centerdot"
-                android:layout_alignEnd="@+id/passwordET"
-                android:layout_alignLeft="@+id/passwordET"
-                android:layout_alignRight="@+id/passwordET"
-                android:layout_alignStart="@+id/passwordET"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/roundrectangle_solid_gray"
                 android:ems="10"
@@ -52,12 +66,9 @@
 
             <EditText
                 android:id="@+id/passwordET"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/loginBTN"
-                android:layout_alignLeft="@+id/loginBTN"
-                android:layout_alignRight="@+id/loginBTN"
-                android:layout_alignStart="@+id/loginBTN"
+                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/centerdot"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/roundrectangle_solid_gray"
@@ -77,11 +88,12 @@
 
             <Button
                 android:id="@+id/loginBTN"
-                android:layout_width="fill_parent"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/passwordET"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="50dp"
+                android:layout_alignLeft="@+id/logoIV"
+                android:layout_alignStart="@+id/logoIV"
+                android:layout_below="@+id/forgotpassTV"
+                android:layout_marginTop="38dp"
                 android:background="@drawable/roundrectangle_home"
                 android:text="login"
                 android:textColor="#FFFFFF" />
@@ -90,7 +102,7 @@
         </RelativeLayout>
 
 
-            <Button
+              <Button
                 android:id="@+id/registerBTN"
                 android:layout_width="fill_parent"
                 android:layout_height="60dp"

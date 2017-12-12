@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -24,13 +25,16 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -53,7 +57,7 @@ import java.util.Date;
  * Created by Mohsin on 11/21/2017.
  */
 
-public class ProfileTab extends Fragment implements ProfileTabInterface{
+public class ProfileTab extends Fragment{
 
     private static final String TAG = "PROFILETAB";
     private final int CAMERA = 1;
@@ -66,6 +70,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     RelativeLayout voicePostRL;
     RelativeLayout imagePostRL;
     RelativeLayout textPostRL;
+    RelativeLayout mainRL;
     RecordAudio audioRecorder;
     ImageView profileplayIV;
     ImageView postplayIV;
@@ -86,10 +91,13 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     EditText usernameET;
     EditText aboutmeET;
 
+    Button logoutBTN;
+
 
     String profileAudioPath;
     String audioPostPath;
     String newPostID;
+    String typeofAudio;
 
     SeekBar seekBar;
 
@@ -122,6 +130,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     ListView profileLV;
     ProfileAdapter adapter;
 
+    ProgressBar loadingPB;
 
 
 
@@ -148,10 +157,8 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         profileLV = rootView.findViewById(R.id.profileLV);
         dialogBox = new DialogBox(getContext());
         isPlaying = false;
-        //    rippleBackground= rootView.findViewById(R.id.rippleview);
-        dialogBox.loadingDialog();
-
-
+        loadingPB = (ProgressBar) rootView.findViewById(R.id.progressbar);
+        loadingPB.setVisibility(View.VISIBLE);
         userObject = ((TabActivity) getActivity()).userObject;
         postObject = ((TabActivity) getActivity()).postObject;
         profileTabInterface = new ProfileTabInterface() {
@@ -161,11 +168,14 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                 profileIV.setImageBitmap(profilePic);
                 adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
                 profileLV.setAdapter(adapter);
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
             }
 
             @Override
-            public void gotProfileAudio()
+            public void gotProfileAudio(String type)
             {
+                Log.d(TAG,"type is = " + type);
                 profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
                 profilemediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -183,6 +193,13 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
+                if(type.contains("profile")) {
+                    recordAudioMenu.dismiss();
+                    playAudioMenu.dismiss();
+                    dialogBox.createDialog("Changed Audio","You have sucessfully updated your Listn Audio Profile","good");
                 }
             }
 
@@ -243,6 +260,16 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
             }
 
+            @Override
+            public void setProfileAudioPath(JSONObject user) {
+
+            }
+
+            @Override
+            public void problemProfileAudioPath() {
+
+            }
+
         };
 
         requests = new ProfileAsyncRequests(profileTabInterface);
@@ -272,6 +299,9 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             }
             else
             {
+               getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+               loadingPB.setVisibility(View.VISIBLE);
                 requests.getImage(userObject.getString("profilepic"),"ProfileTab");
             }
             if(userObject.getString("profileaudio").contains("NoAudio"))
@@ -280,7 +310,10 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
             }
             else
             {
-                requests.downloadAudio(userObject.getString("profileaudio"));
+                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.VISIBLE);
+                requests.downloadAudio(userObject.getString("profileaudio"),"none");
             }
             usernameTV.setText( "@" + userObject.getString("username"));
             fullnameTV.setText(userObject.getString("fullname"));
@@ -313,6 +346,7 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         voicePostRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                typeofAudio = "post";
                 showRecordAudioMenu();
             }
         });
@@ -370,15 +404,18 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
     }
 
     private void loadSettings() throws JSONException {
-        settingsMenu = new Dialog(getContext(),R.style.CustomDialog);;
+        settingsMenu = new Dialog(getContext(),R.style.DialogStyle);
         settingsMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
         settingsMenu.setCancelable(true);
         settingsMenu.setContentView(R.layout.editprofile);
+        settingsMenu.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         settingsMenu.show();
         final ImageView closeIV = settingsMenu.findViewById(R.id.backIV);
         final ImageView changeIV = settingsMenu.findViewById(R.id.saveIV);
+        ImageView changeProfileListnLV = settingsMenu.findViewById(R.id.changeprofileaudioIV);
         final Button changePicBTN = settingsMenu.findViewById(R.id.changepicBTN);
-        final Button logoutBTN = settingsMenu.findViewById(R.id.logoutBTN);
+        final RelativeLayout settingsRootView = settingsMenu.findViewById(R.id.settingsmainholderRL);
+        logoutBTN = settingsMenu.findViewById(R.id.logoutBTN);
         fullnameET = settingsMenu.findViewById(R.id.fullnameET);
         usernameET = settingsMenu.findViewById(R.id.usernameET);
         aboutmeET = settingsMenu.findViewById(R.id.aboutmeET);
@@ -389,6 +426,14 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         fullnameET.setText(userObject.getString("fullname"));
         aboutmeET.setText(userObject.getString("bio"));
         usernameET.setText(userObject.getString("username"));
+
+        changeProfileListnLV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                typeofAudio = "profile";
+                showRecordAudioMenu();
+            }
+        });
 
         changeIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -437,6 +482,32 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                 setProfilePic();
             }
         });
+
+        settingsRootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                Rect r = new Rect();
+                settingsRootView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = settingsRootView.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
+                    logoutBTN.setVisibility(View.GONE);
+                }
+                else {
+                    // keyboard is closed
+                    logoutBTN.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
     }
 
 
@@ -495,9 +566,6 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
         return "";
     }
 
-    public void setProfileTabProfilePic(Bitmap result) {
-
-    }
 
     public void gotProfileAudio() {
         profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
@@ -513,31 +581,6 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
 
     }
 
-
-    public void loadListView(ArrayList<String> audioFileList) {
-
-    }
-
-    public void setprofileImagePath(JSONObject user) {
-
-    }
-
-
-    public void problemSettingProfilePic() {
-
-    }
-
-    public void setSettingProfilePic(Bitmap result) {
-
-    }
-
-    public void changeSettings(JSONObject result) {
-
-    }
-
-    public void problemChangingSettings() {
-
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     public void showRecordAudioMenu()
@@ -783,7 +826,8 @@ public class ProfileTab extends Fragment implements ProfileTabInterface{
                   headers.put("date",currentDateTimeString);
                   headers.put("username",userObject.getString("username"));
                   headers.put("audiofilename",newPostID);
-                    requests.uploadAudioPost(audioPostPath,headers.toString());
+                  if(typeofAudio.contains("post")) requests.uploadAudioPost(audioPostPath,headers.toString());
+                  else if(typeofAudio.contains("profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

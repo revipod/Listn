@@ -6,9 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#FFFFFF"
-    tools:layout_editor_absoluteX="0dp"
-    tools:layout_editor_absoluteY="0dp"
-    tools:ignore="MissingConstraints">
+>
 
     <TextView
         android:id="@+id/fullnameTV"

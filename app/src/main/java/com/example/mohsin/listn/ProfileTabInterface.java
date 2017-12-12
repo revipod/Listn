@@ -14,13 +14,13 @@ import java.util.ArrayList;
 public interface ProfileTabInterface
 {
     void setProfileTabProfilePic(Bitmap result);
-    void gotProfileAudio();
+    void gotProfileAudio(String profile);
     void loadListView(ArrayList<String> audioFileList);
     void setprofileImagePath(JSONObject user);
     void problemSettingProfilePic();
     void setSettingProfilePic(Bitmap result);
-
     void changeSettings(JSONObject result) throws JSONException;
-
     void problemChangingSettings();
+    void setProfileAudioPath(JSONObject user);
+    void problemProfileAudioPath();
 }

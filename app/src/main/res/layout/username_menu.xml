@@ -5,10 +5,7 @@
         android:id="@+id/mainRL"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#FFFFFF"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints">
+        android:background="#FFFFFF">
 
         <TextView
             android:id="@+id/usernameTV"
@@ -45,17 +42,18 @@
             android:padding="10dp" />
 
 
-        <Button
-            android:id="@+id/continueBTN"
-            android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:layout_below="@+id/usernameET"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="70dp"
-            android:background="@drawable/roundrectangle_home"
-            android:text="Contiue"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+    <Button
+        android:id="@+id/continueBTN"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_alignLeft="@+id/usernameET"
+        android:layout_alignStart="@+id/usernameET"
+        android:layout_below="@+id/usernameET"
+        android:layout_marginTop="49dp"
+        android:background="@drawable/roundrectangle_home"
+        android:text="Contiue"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
 
 
     </RelativeLayout>

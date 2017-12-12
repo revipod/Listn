@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -28,6 +30,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -41,7 +45,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
-public class MainActivity extends AppCompatActivity implements MainActivityInterface {
+public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
@@ -57,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     DialogBox dialogBox;
 
     SeekBar seekBar;
+
+    ProgressBar loadingPB;
 
     View centerView;
     Dialog newUserDialog;
@@ -115,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     ImageView playIV;
     ImageView pauseIV;
 
+    RelativeLayout rootView;
+
     public Runnable runnable = new Runnable() {
 
         public void run() {
@@ -149,10 +157,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         usernameET = (EditText) findViewById(R.id.usernameET);
         passwordET = (EditText) findViewById(R.id.passwordET);
         centerView = (View) findViewById(R.id.centerdot);
-   //     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        rootView = (RelativeLayout) findViewById(R.id.rootView);
+        loadingPB = (ProgressBar) findViewById(R.id.progressbar);
         mainActivityInterface = new MainActivityInterface() {
             @Override
             public void loginUserI(JSONObject result) throws JSONException {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
                 if(result.getBoolean("loggedin")){
                     userData = result.getJSONObject("user");
                     postData = result.getJSONObject("posts");
@@ -183,10 +194,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             @Override
             public void setprofileImagePath(JSONObject user) throws JSONException {
+
                 userData = user;
                 profilePicPath = user.getString("profilepic");
                 if(profilePicPath.contains("NoPicture"))
                 {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.GONE);
                     profilePic = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                             R.mipmap.noprofilepic);
                 }
@@ -205,6 +219,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             @Override
             public void profileCreated(JSONObject result) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
                 firsttimeAudioMenu.dismiss();
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
@@ -220,6 +236,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
             @Override
             public void setMainActivityProfilePicBitmap(Bitmap result) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
                 profilePic = result;
             }
         };
@@ -231,14 +249,44 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
 
+
     }
 
     private void callClickListeners()
     {
+
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                Rect r = new Rect();
+                rootView.getWindowVisibleDisplayFrame(r);
+                int screenHeight = rootView.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                Log.d(TAG, "keypadHeight = " + keypadHeight);
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
+                    registerBTN.setVisibility(View.GONE);
+                }
+                else {
+                    // keyboard is closed
+                    registerBTN.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         loginBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.VISIBLE);
                     checkUser(usernameET.getText().toString(), passwordET.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -256,6 +304,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
     public void setNewUser(final JSONObject result) throws JSONException {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        loadingPB.setVisibility(View.GONE);
         if (result.getBoolean("found"))
         {
             dialogBox.createDialog("Email exists","Sorry but a user with this email already exists. Please try again or reset your password.","bad");
@@ -278,11 +328,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
 
 
     private void displayUserNameMenu() {
-        newUserDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        newUserDialog = new Dialog(this, R.style.CustomDialog);
         newUserDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         newUserDialog.setCancelable(true);
         newUserDialog.setContentView(R.layout.username_menu);
+        newUserDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         newUserDialog.show();
+
         Button continueBTN = (Button) newUserDialog.findViewById(R.id.continueBTN);
         final EditText usernameET = (EditText) newUserDialog.findViewById(R.id.usernameET);
         continueBTN.setOnClickListener(new View.OnClickListener() {
@@ -296,6 +348,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                 {
                     JSONObject usernameParams = new JSONObject();
                     try {
+                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        loadingPB.setVisibility(View.VISIBLE);
                         usernameParams.put("username",usernameET.getText().toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -314,16 +369,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
     }
 
     public void getName(Boolean found, final String username){
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        loadingPB.setVisibility(View.GONE);
         if(found)
         {
             dialogBox.createDialog("Username exists","Sorry but a user with this username already exists. Please try again.","bad");
         }
         else
         {
-            additionalregistermenuDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            additionalregistermenuDialog = new Dialog(this, R.style.DialogStyle);
             additionalregistermenuDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             additionalregistermenuDialog.setCancelable(true);
             additionalregistermenuDialog.setContentView(R.layout.additionalregistermenu);
+            additionalregistermenuDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             additionalregistermenuDialog.show();
             dialogBox.createDialog("Sucess!","Welcome to Listn " + username + "! Let's get you started!","good");
             newUserDialog.dismiss();
@@ -348,6 +406,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
                                 dialogBox.createDialog("Password", "Please make sure your password is at least 5 characters.", "bad");
                                 return;
                             } else {
+                                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                                loadingPB.setVisibility(View.VISIBLE);
                                 JSONObject nameandemailParams = new JSONObject();
                                 try {
                                     nameandemailParams.put("username",username);
@@ -419,6 +480,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             return;
         }
         if (requestCode == CAMERA) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            loadingPB.setVisibility(View.VISIBLE);
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             String path = saveImage(thumbnail);
             thumbnail.recycle();
@@ -731,6 +795,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
             public void onClick(View view) {
 
                 try {
+                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.VISIBLE);
                     requests.setProfileAudio(profileAudioPath,userData.getString("username"));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -774,37 +841,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityInter
         loginParams.put("username",username);
         loginParams.put("password",password);
         requests.login(loginParams);
-    }
-
-    public void loginUserI(JSONObject result) throws JSONException {
-
-    }
-
-    public void getNameI(Boolean found, String username) {
-
-    }
-
-    public void setNewUserI(JSONObject result) throws JSONException {
-
-    }
-
-    public void setprofileImagePath(JSONObject profilepicPath) throws JSONException {
-
-    }
-
-
-    public void problemSettingProfilePic() {
-
-    }
-
-
-    public void profileCreated(JSONObject result) {
-
-    }
-
-    @Override
-    public void setMainActivityProfilePicBitmap(Bitmap result) {
-
     }
 
 

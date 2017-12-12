@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settingsmainholderRL"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="#d9d9d9"
-    android:orientation="vertical">
+    android:background="#ffffff">
 
 
     <RelativeLayout
@@ -40,41 +40,62 @@
     </RelativeLayout>
 
     <ScrollView
-        android:fillViewport="true"
+        android:layout_above="@+id/logoutBTN"
+        android:background="#FFFFFF"
         android:layout_below="@+id/topbarRL"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <RelativeLayout
-            android:layout_below="@+id/topbarRL"
+            android:layout_gravity="center"
             android:id="@+id/mainRL"
-            android:background="#FFFFFF"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/topbarRL"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:layout_margin="5dp"
+                android:id="@+id/changeaudioTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:text="Change Profile Audio"
+                android:textColor="#939393" />
+
+            <ImageView
+                android:id="@+id/changeprofileaudioIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/changeaudioTV"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:src="@mipmap/mic" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/settingprofileIV"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_below="@+id/changeprofileaudioIV"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="26dp"
                 android:src="@mipmap/mohsin"
                 app:civ_border_color="#d3d3d3"
                 app:civ_border_width="2dp" />
 
             <Button
-                android:background="@drawable/halfrectanglebottom"
-                android:textColor="#FFFFFF"
-                android:layout_margin="10dp"
-                android:layout_below="@+id/settingprofileIV"
-                android:layout_centerHorizontal="true"
-                android:text="Change Picture"
                 android:id="@+id/changepicBTN"
                 android:layout_width="200dp"
-                android:layout_height="40dp" />
+                android:layout_height="40dp"
+                android:layout_below="@+id/settingprofileIV"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="10dp"
+                android:background="@drawable/halfrectanglebottom"
+                android:text="Change Picture"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
 
             <TextView
-                android:textStyle="bold"
                 android:id="@+id/fullnameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -83,78 +104,89 @@
                 android:layout_toLeftOf="@+id/changepicBTN"
                 android:layout_toStartOf="@+id/changepicBTN"
                 android:text="Name"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <EditText
-                android:textSize="15sp"
-                android:hint="Mohsin Abbasi"
-                android:layout_below="@id/fullnameTV"
-                android:layout_alignStart="@+id/fullnameTV"
+                android:padding="10dp"
+                android:background="@drawable/roundrectangle_solid_gray"
                 android:id="@+id/fullnameET"
-                android:layout_marginRight="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/fullnameTV" />
+                android:layout_alignLeft="@+id/fullnameTV"
+                android:layout_alignStart="@+id/fullnameTV"
+                android:layout_below="@id/fullnameTV"
+                android:layout_marginRight="30dp"
+                android:hint="Full Name"
+                android:textSize="15sp" />
 
             <TextView
-                android:textStyle="bold"
                 android:id="@+id/usernameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/fullnameTV"
+                android:layout_alignStart="@+id/fullnameTV"
                 android:layout_below="@+id/fullnameET"
                 android:layout_marginTop="10dp"
-                android:layout_alignStart="@+id/fullnameTV"
                 android:text="Username"
                 android:textSize="15sp"
-                android:layout_alignLeft="@+id/fullnameTV" />
+                android:textStyle="bold" />
 
             <EditText
-                android:textSize="15sp"
-                android:hint="revipod"
-                android:layout_below="@id/usernameTV"
-                android:layout_alignStart="@+id/usernameTV"
+                android:padding="10dp"
+                android:background="@drawable/roundrectangle_solid_gray"
                 android:id="@+id/usernameET"
-                android:layout_marginRight="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/fullnameTV" />
+                android:layout_alignLeft="@+id/fullnameTV"
+                android:layout_alignStart="@+id/usernameTV"
+                android:layout_below="@id/usernameTV"
+                android:layout_marginRight="30dp"
+                android:hint="Your new username"
+                android:textSize="15sp" />
 
             <TextView
-                android:textStyle="bold"
                 android:id="@+id/aboutmeTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/fullnameTV"
+                android:layout_alignStart="@+id/usernameTV"
                 android:layout_below="@+id/usernameET"
                 android:layout_marginTop="10dp"
-                android:layout_alignStart="@+id/usernameTV"
                 android:text="About me"
                 android:textSize="15sp"
-                android:layout_alignLeft="@+id/fullnameTV" />
+                android:textStyle="bold" />
 
             <EditText
-                android:inputType="textMultiLine"
-                android:layout_marginRight="30dp"
+                android:padding="10dp"
+                android:background="@drawable/roundrectangle_solid_gray"
                 android:id="@+id/aboutmeET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/aboutmeTV"
                 android:layout_alignStart="@+id/aboutmeTV"
                 android:layout_below="@+id/aboutmeTV"
-                android:hint="I love gaming and working out. Add me on snapchat at ipodrev. Hit that Listn Button for more!"
+                android:layout_marginRight="30dp"
+                android:hint="Say something about yourself!"
+                android:inputType="textMultiLine"
                 android:textSize="15sp" />
 
 
-            <Button
-                android:id="@+id/logoutBTN"
-                android:textStyle="bold"
-                android:text="Logout"
-                android:textColor="#ffffff"
-                android:background="#d3d3d3"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="50dp" />
 
         </RelativeLayout>
 
+
     </ScrollView>
+
+    <Button
+        android:id="@+id/logoutBTN"
+        android:textStyle="bold"
+        android:text="Logout"
+        android:textColor="#ffffff"
+        android:background="#d3d3d3"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+
 </RelativeLayout>
