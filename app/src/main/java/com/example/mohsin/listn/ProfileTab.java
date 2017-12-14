@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -70,7 +71,7 @@ public class ProfileTab extends Fragment{
     RelativeLayout voicePostRL;
     RelativeLayout imagePostRL;
     RelativeLayout textPostRL;
-    RelativeLayout mainRL;
+    ScrollView mainholderSV;
     RecordAudio audioRecorder;
     ImageView profileplayIV;
     ImageView postplayIV;
@@ -144,6 +145,7 @@ public class ProfileTab extends Fragment{
         voicePostRL = rootView.findViewById(R.id.micpostRL);
         imagePostRL = rootView.findViewById(R.id.imagepostRL);
         textPostRL = rootView.findViewById(R.id.textpostRL);
+        mainholderSV = rootView.findViewById(R.id.mainholderSV);
         profileplayIV =  rootView.findViewById(R.id.playIV);
         stopIV =  rootView.findViewById(R.id.stopIV);
         profileIV = rootView.findViewById(R.id.profileIV);
@@ -164,18 +166,19 @@ public class ProfileTab extends Fragment{
         profileTabInterface = new ProfileTabInterface() {
             @Override
             public void setProfileTabProfilePic(Bitmap result) {
+                adapter.profilePic = result;
                 profilePic = result;
                 profileIV.setImageBitmap(profilePic);
-                adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
-                profileLV.setAdapter(adapter);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
             }
 
             @Override
-            public void gotProfileAudio(String type)
+            public void gotProfileAudio(String type,JSONObject user)
             {
+                userObject = user;
                 Log.d(TAG,"type is = " + type);
+                profileAudioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp";
                 profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
                 profilemediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -186,14 +189,6 @@ public class ProfileTab extends Fragment{
                         stopIV.setVisibility(View.INVISIBLE);
                     }
                 });
-                try {
-                    if(postObject.getJSONArray("postSource").length() > 0)
-                    {
-                        requests.downloadAudioArray(postObject.getJSONArray("postSource"),postObject.getJSONArray("postType"));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
                 if(type.contains("profile")) {
@@ -205,12 +200,24 @@ public class ProfileTab extends Fragment{
 
             @Override
             public void loadListView(ArrayList<String> audioFileList) {
-              for(int i = 0; i < audioFileList.size(); i++)
+              for(int i = 0; i < audioFileList.size(); i++) {
                   try {
-                      adapter.add(new ProfileDataProvider(userObject.getString("username"),audioFileList.get(i), (String) postObject.getJSONArray("postDate").get(i)));
+                      adapter.add(new ProfileDataProvider(userObject.getString("username"), audioFileList.get(i), (String) postObject.getJSONArray("postDate").get(i)));
                   } catch (JSONException e) {
                       e.printStackTrace();
                   }
+              }
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
+                mainholderSV.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainholderSV.scrollTo(0, 0);
+                        mainholderSV.pageScroll(View.FOCUS_UP);
+                        mainholderSV.smoothScrollTo(0,0);
+                    }
+                });
+
             }
 
             @Override
@@ -271,8 +278,11 @@ public class ProfileTab extends Fragment{
             }
 
         };
-
+        profilePic = BitmapFactory.decodeResource(getContext().getResources(),
+                R.mipmap.noprofilepic);
         requests = new ProfileAsyncRequests(profileTabInterface);
+        adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
+        profileLV.setAdapter(adapter);
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
         audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + generateID() + ".3gp";
 
@@ -307,13 +317,26 @@ public class ProfileTab extends Fragment{
             if(userObject.getString("profileaudio").contains("NoAudio"))
             {
 
-            }
+        }
             else
             {
                 getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.VISIBLE);
-                requests.downloadAudio(userObject.getString("profileaudio"),"none");
+                requests.downloadAudio(userObject,"none");
+            }
+            try {
+                if(postObject.getJSONArray("postSource").length() > 0)
+                {
+                    requests.downloadAudioArray(postObject.getJSONArray("postSource"),postObject.getJSONArray("postType"));
+                }
+                else
+                {
+                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.GONE);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             usernameTV.setText( "@" + userObject.getString("username"));
             fullnameTV.setText(userObject.getString("fullname"));
@@ -404,7 +427,7 @@ public class ProfileTab extends Fragment{
     }
 
     private void loadSettings() throws JSONException {
-        settingsMenu = new Dialog(getContext(),R.style.DialogStyle);
+        settingsMenu = new Dialog(getContext(),R.style.CustomDialog);
         settingsMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
         settingsMenu.setCancelable(true);
         settingsMenu.setContentView(R.layout.editprofile);

@@ -283,13 +283,15 @@ public class MainActivity extends AppCompatActivity {
         loginBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    loadingPB.setVisibility(View.VISIBLE);
-                    checkUser(usernameET.getText().toString(), passwordET.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if(checkCameraPermission() && checkMicPermission()) {
+                    try {
+                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                        loadingPB.setVisibility(View.VISIBLE);
+                        checkUser(usernameET.getText().toString(), passwordET.getText().toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -459,9 +461,10 @@ public class MainActivity extends AppCompatActivity {
         skipPhotoTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firsttimeAudioMenu.show();
-                firsttimeCameraMenu.dismiss();
-
+                if(checkCameraPermission()) {
+                    firsttimeAudioMenu.show();
+                    firsttimeCameraMenu.dismiss();
+                }
             }
         });
     }
@@ -545,14 +548,16 @@ public class MainActivity extends AppCompatActivity {
         skipAudioTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firsttimeAudioMenu.dismiss();
-                Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-                intent.putExtra("User", userData.toString());
-                intent.putExtra("postData",postData.toString());
-                intent.putExtra("loginorRegister", "login");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
+                if(checkMicPermission()) {
+                    firsttimeAudioMenu.dismiss();
+                    Intent intent = new Intent(getApplicationContext(), TabActivity.class);
+                    intent.putExtra("User", userData.toString());
+                    intent.putExtra("postData", postData.toString());
+                    intent.putExtra("loginorRegister", "login");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
     }

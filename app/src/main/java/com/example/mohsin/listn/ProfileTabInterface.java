@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public interface ProfileTabInterface
 {
     void setProfileTabProfilePic(Bitmap result);
-    void gotProfileAudio(String profile);
+    void gotProfileAudio(String profile, JSONObject result);
     void loadListView(ArrayList<String> audioFileList);
     void setprofileImagePath(JSONObject user);
     void problemSettingProfilePic();

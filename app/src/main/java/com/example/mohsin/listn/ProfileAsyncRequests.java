@@ -212,14 +212,19 @@ class ProfileAsyncRequests {
 
 
     @SuppressLint("StaticFieldLeak")
-    public void downloadAudio(final String path, final String profile)
+    public void downloadAudio(final JSONObject user, final String type)
     {
+        try {
+            Log.d(TAG,"path is = " + user.getString("profileaudio"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... strings) {
                 int count;
                 try {
-                    URL url = new URL(path);
+                    URL url = new URL(user.getString("profileaudio"));
                     URLConnection conexion = url.openConnection();
                     conexion.connect();
                     // this will be useful so that you can show a tipical 0-100% progress bar
@@ -244,7 +249,7 @@ class ProfileAsyncRequests {
             @Override
             protected void onPostExecute(String result)
             {
-                profileTabInterface.gotProfileAudio(profile);
+                profileTabInterface.gotProfileAudio(type,user);
             }
         }.execute();
     }
@@ -377,7 +382,7 @@ class ProfileAsyncRequests {
                 if (result != null) {
                     try {
                         if (result.getBoolean("uploaded")) {
-                            downloadAudio(result.getJSONObject("user").getString("profileaudio"),"profile");
+                            downloadAudio(result.getJSONObject("user"),"profile");
                             Log.d(TAG, "profileaudioPath is = " + result.getJSONObject("user").getString("profileaudioPath"));
                         } else {
                             profileTabInterface.problemProfileAudioPath();
