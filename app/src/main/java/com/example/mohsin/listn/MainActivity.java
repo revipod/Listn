@@ -20,6 +20,7 @@ import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView timerTV;
     TextView currentTimeTV;
+    TextView additionalinfoTV;
 
     MainAsyncRequests requests;
     DialogBox dialogBox;
@@ -114,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     String profileAudioPath = "blank";
     String profilePicPath = "blank";
+    String email,password,fullname;
 
     JSONObject userData;
     JSONObject postData;
@@ -317,12 +320,6 @@ public class MainActivity extends AppCompatActivity {
             postData = result.getJSONObject("postData");
             userData = result.getJSONObject("user");
             additionalregistermenuDialog.dismiss();
-           /* Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-            intent.putExtra("User",newUser.toString());
-            intent.putExtra("loginorRegister","register");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();*/
             loadFirstUser();
             loadFirstAudio();
         }
@@ -389,49 +386,108 @@ public class MainActivity extends AppCompatActivity {
             newUserDialog.dismiss();
 
             Button nextBTN = (Button) additionalregistermenuDialog.findViewById(R.id.nextBTN);
+            additionalinfoTV = additionalregistermenuDialog.findViewById(R.id.additionalinfoTV);
             final EditText emailET = (EditText) additionalregistermenuDialog.findViewById(R.id.emailET);
             final EditText fullnameET = (EditText) additionalregistermenuDialog.findViewById(R.id.fullnameET);
-            final EditText passwordET = (EditText) additionalregistermenuDialog.findViewById(R.id.passwordET);
+            final EditText regpasswordET = (EditText) additionalregistermenuDialog.findViewById(R.id.passwordET);
+            final ImageView backIV = (ImageView) additionalregistermenuDialog.findViewById(R.id.backIV);
+
+            fullnameET.requestFocus();
+
 
             nextBTN.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(emailET.length() < 5)
+                    if(fullnameET.getVisibility() == View.VISIBLE)
                     {
-                        dialogBox.createDialog("Email", "Please insert a valid email address", "bad");
+                        if(fullnameET.length() < 3)
+                        {
+                            dialogBox.createDialog("Name", "Please insert a valid Full Name", "bad");
+                        }
+                        else
+                        {
+                            fullname = fullnameET.getText().toString().trim();
+                            fullnameET.setVisibility(View.GONE);
+                            regpasswordET.setVisibility(View.VISIBLE);
+                            additionalinfoTV.setText("Password");
+                            regpasswordET.requestFocus();
+                        }
                     }
-                    else {
-                        if (fullnameET.length() < 3) {
-                            dialogBox.createDialog("Empty Username", "Please insert your Full Name", "bad");
-                        } else {
-                            if (passwordET.length() < 5) {
-                                dialogBox.createDialog("Password", "Please make sure your password is at least 5 characters.", "bad");
-                                return;
-                            } else {
-                                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                                loadingPB.setVisibility(View.VISIBLE);
-                                JSONObject nameandemailParams = new JSONObject();
-                                try {
-                                    nameandemailParams.put("username",username);
-                                    nameandemailParams.put("fullname", fullnameET.getText().toString().trim());
-                                    nameandemailParams.put("password", passwordET.getText().toString().trim());
-                                    nameandemailParams.put("email", emailET.getText().toString().trim());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    requests.checkEmail(nameandemailParams);
-                                } catch (ExecutionException e) {
-                                    e.printStackTrace();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                    else if(regpasswordET.getVisibility() == View.VISIBLE)
+                    {
+                        if(regpasswordET.length() < 5)
+                        {
+                            dialogBox.createDialog("Password", "Please make sure your password is at least 5 characters", "bad");
+                        }
+                        else
+                        {
+                            password = regpasswordET.getText().toString().trim();
+                            regpasswordET.setVisibility(View.GONE);
+                            emailET.setVisibility(View.VISIBLE);
+                            additionalinfoTV.setText("Email");
+                            emailET.requestFocus();
+                        }
+                    }
+                    else if(emailET.getVisibility() == View.VISIBLE)
+                    {
+                        if(emailET.length() < 5)
+                        {
+                            dialogBox.createDialog("Email", "Please make sure you've insereted a valid email address.", "bad");
+                        }
+                        else
+                        {
+                            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            loadingPB.setVisibility(View.VISIBLE);
+                            email = emailET.getText().toString();
+                            JSONObject nameandemailParams = new JSONObject();
+                            try {
+                                nameandemailParams.put("username",username);
+                                nameandemailParams.put("fullname", fullname);
+                                nameandemailParams.put("password", password);
+                                nameandemailParams.put("email", email);
+                                requests.checkEmail(nameandemailParams);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
                 }
             });
+
+            backIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(fullnameET.getVisibility() == View.VISIBLE)
+                    {
+                        additionalregistermenuDialog.dismiss();
+                    }
+                    else if (regpasswordET.getVisibility() == View.VISIBLE)
+                    {
+                        fullnameET.requestFocus();
+                        additionalinfoTV.setText("Name");
+                        fullnameET.setVisibility(View.VISIBLE);
+                        regpasswordET.setVisibility(View.GONE);
+                    }
+                    else if(emailET.getVisibility() == View.VISIBLE)
+                    {
+                        regpasswordET.requestFocus();
+                        additionalinfoTV.setText("Password");
+                        emailET.setVisibility(View.INVISIBLE);
+                        regpasswordET.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+
+
+
+
+
         }
 
 
@@ -442,10 +498,10 @@ public class MainActivity extends AppCompatActivity {
     private void loadFirstUser() throws JSONException {
         firsttimeCameraMenu = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         firsttimeCameraMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        firsttimeCameraMenu.setCancelable(true);
+        firsttimeCameraMenu.setCancelable(false);
         firsttimeCameraMenu.setContentView(R.layout.firsttime_cameramenu);
         firsttimeCameraMenu.show();
-        dialogBox.createDialog("Sucess!","Welcome to Listn " + userData.get("username") + " You have sucessfully created a Listn Account! Let's get your profile started!","good");
+        dialogBox.createDialog("Sucess!","Welcome to Listn " + userData.get("username") + ". You have sucessfully created a Listn Account! Let's get your profile started!","good");
         Button addPhotoBTN = (Button) firsttimeCameraMenu.findViewById(R.id.addphotoBTN);
         TextView skipPhotoTV = (TextView) firsttimeCameraMenu.findViewById(R.id.skipPhotoTV);
         addPhotoBTN.setOnClickListener(new View.OnClickListener() {
@@ -531,7 +587,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadFirstAudio() {
         firsttimeAudioMenu = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         firsttimeAudioMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        firsttimeAudioMenu.setCancelable(true);
+        firsttimeAudioMenu.setCancelable(false);
         firsttimeAudioMenu.setContentView(R.layout.firsttime_profileaudio);
         Button recordaudioBTN = firsttimeAudioMenu.findViewById(R.id.recordaudioBTN);
         TextView skipAudioTV = firsttimeAudioMenu.findViewById(R.id.skipAudioTV);
@@ -561,6 +617,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     public void showRecordAudioMenu()

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/settingsmainholderRL"
     android:layout_width="wrap_content"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     android:layout_height="wrap_content"
     android:background="#ffffff">
 
@@ -101,25 +100,25 @@
                 android:id="@+id/fullnameTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/fullnameET"
+                android:layout_alignStart="@+id/fullnameET"
                 android:layout_below="@+id/changepicBTN"
-                android:layout_marginTop="11dp"
-                android:layout_toLeftOf="@+id/changepicBTN"
-                android:layout_toStartOf="@+id/changepicBTN"
                 android:text="Name"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="NotSibling" />
 
             <EditText
-                android:padding="10dp"
-                android:background="@drawable/roundrectangle_solid_gray"
+                android:inputType="textPersonName"
+                android:layout_below="@+id/fullnameTV"
+                android:layout_marginRight="30dp"
                 android:id="@+id/fullnameET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/fullnameTV"
-                android:layout_alignStart="@+id/fullnameTV"
-                android:layout_below="@id/fullnameTV"
-                android:layout_marginRight="30dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/roundrectangle_solid_gray"
                 android:hint="Full Name"
+                android:padding="10dp"
                 android:textSize="15sp" />
 
             <TextView
@@ -135,13 +134,13 @@
                 android:textStyle="bold" />
 
             <EditText
+                android:inputType="textPersonName"
                 android:padding="10dp"
                 android:background="@drawable/roundrectangle_solid_gray"
                 android:id="@+id/usernameET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/fullnameTV"
-                android:layout_alignStart="@+id/usernameTV"
+                android:layout_centerHorizontal="true"
                 android:layout_below="@id/usernameTV"
                 android:layout_marginRight="30dp"
                 android:hint="Your new username"
@@ -160,17 +159,16 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:padding="10dp"
-                android:background="@drawable/roundrectangle_solid_gray"
                 android:id="@+id/aboutmeET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/aboutmeTV"
                 android:layout_alignStart="@+id/aboutmeTV"
                 android:layout_below="@+id/aboutmeTV"
-                android:layout_marginRight="30dp"
+                android:background="@drawable/roundrectangle_solid_gray"
                 android:hint="Say something about yourself!"
                 android:inputType="textMultiLine"
+                android:padding="10dp"
                 android:textSize="15sp" />
 
 
