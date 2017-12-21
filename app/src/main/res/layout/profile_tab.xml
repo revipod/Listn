@@ -21,16 +21,17 @@
         />
 
 
-    <ScrollView
-        android:id="@+id/mainholderSV"
+ <!--   <ScrollView
+        android:id="@+id/maino"
         android:layout_below="@+id/progressbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+-->
         <RelativeLayout
+            android:id="@+id/topholderRL"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
             <RelativeLayout
@@ -294,22 +295,22 @@
             </LinearLayout>
 
 
-            <ListView
-                android:transcriptMode="alwaysScroll"
-                android:id="@+id/profileLV"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="3dp"
-                android:layout_marginRight="3dp"
-                android:background="#ffffff"
-                android:layout_below="@+id/onyourmindLL"
-                android:layout_width="fill_parent"
-                android:layout_height="500dp">
 
-
-            </ListView>
         </RelativeLayout>
 
 
-    </ScrollView>
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/topholderRL"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:id="@+id/profileRV"
+        android:background="#f2f2f2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical" />
 
+
+   <!-- </ScrollView>
+-->
 </RelativeLayout>

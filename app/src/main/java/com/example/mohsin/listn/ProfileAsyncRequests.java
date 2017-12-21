@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -169,7 +170,7 @@ class ProfileAsyncRequests {
 
     @SuppressLint("StaticFieldLeak")
     public void uploadAudioPost(final String audioPath, final String headers) throws Exception {
-        Log.d(TAG, "About to upload Image");
+        Log.d(TAG, "About to upload Audio");
         new AsyncTask<JSONObject, Void, JSONObject>() {
 
             @Override
@@ -196,8 +197,10 @@ class ProfileAsyncRequests {
                 if (result != null) {
                     try {
                         if (result.getBoolean("posted")) {
-                        //    tabActivityInterface.setprofileAudioPath(result);
-                            Log.d(TAG, "audiopostpathis is = " + result.getString("audioPostPath"));
+                                JSONObject newPost =  new JSONObject(headers);
+                                newPost.put("postSource",result.getString("audioURL"));
+                                Log.d(TAG,"newpost is = " + newPost);
+                                downloadAudio(newPost,"post");
                         } else {
                        //     tabActivityInterface.problemSettingProfilePic();
                         }
@@ -212,26 +215,40 @@ class ProfileAsyncRequests {
 
 
     @SuppressLint("StaticFieldLeak")
-    public void downloadAudio(final JSONObject user, final String type)
+    public void downloadAudio(final JSONObject object, final String type)
     {
-        try {
-            Log.d(TAG,"path is = " + user.getString("profileaudio"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... strings) {
                 int count;
+                OutputStream output = null;
+                String path = "blank";
+                String filename = "blank";
                 try {
-                    URL url = new URL(user.getString("profileaudio"));
+                    if (type.contains("profile")) {
+                        output = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
+                        path = object.getString("profileaudio");
+
+                    } else if (type.contains("post"))
+                    {
+                        path = object.getString("postSource");
+                        filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +  path.substring(path.length() - 19, path.length() - 4) + ".3gp";
+                        output = new FileOutputStream(filename);
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Log.d(TAG,"path is = " + path);
+                    URL url = new URL(path);
                     URLConnection conexion = url.openConnection();
                     conexion.connect();
                     // this will be useful so that you can show a tipical 0-100% progress bar
                     int lenghtOfFile = conexion.getContentLength();
                     // downlod the file
                     InputStream input = new BufferedInputStream(url.openStream());
-                    OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
                     byte data[] = new byte[1024];
                     long total = 0;
                     while ((count = input.read(data)) != -1) {
@@ -243,13 +260,19 @@ class ProfileAsyncRequests {
                     output.close();
                     input.close();
                 } catch (Exception e) {}
-                return null;
+                return filename;
             }
 
             @Override
             protected void onPostExecute(String result)
             {
-                profileTabInterface.gotProfileAudio(type,user);
+               if(type.contains("profile"))  profileTabInterface.gotProfileAudio(object);
+               else if(type.contains("post")) try {
+                   object.put("audioPath",result);
+                   profileTabInterface.gotPostAudio(object);
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
             }
         }.execute();
     }
@@ -383,7 +406,6 @@ class ProfileAsyncRequests {
                     try {
                         if (result.getBoolean("uploaded")) {
                             downloadAudio(result.getJSONObject("user"),"profile");
-                            Log.d(TAG, "profileaudioPath is = " + result.getJSONObject("user").getString("profileaudioPath"));
                         } else {
                             profileTabInterface.problemProfileAudioPath();
                         }

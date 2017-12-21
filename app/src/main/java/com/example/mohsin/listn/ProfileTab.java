@@ -17,6 +17,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
@@ -71,7 +74,7 @@ public class ProfileTab extends Fragment{
     RelativeLayout voicePostRL;
     RelativeLayout imagePostRL;
     RelativeLayout textPostRL;
-    ScrollView mainholderSV;
+    RelativeLayout topholderRL;
     RecordAudio audioRecorder;
     ImageView profileplayIV;
     ImageView postplayIV;
@@ -128,10 +131,11 @@ public class ProfileTab extends Fragment{
     Dialog playAudioMenu;
     Dialog settingsMenu;
 
-    ListView profileLV;
     ProfileAdapter adapter;
 
     ProgressBar loadingPB;
+
+    RecyclerView recyclerView;
 
 
 
@@ -145,7 +149,7 @@ public class ProfileTab extends Fragment{
         voicePostRL = rootView.findViewById(R.id.micpostRL);
         imagePostRL = rootView.findViewById(R.id.imagepostRL);
         textPostRL = rootView.findViewById(R.id.textpostRL);
-        mainholderSV = rootView.findViewById(R.id.mainholderSV);
+        topholderRL = rootView.findViewById(R.id.topholderRL);
         profileplayIV =  rootView.findViewById(R.id.playIV);
         stopIV =  rootView.findViewById(R.id.stopIV);
         profileIV = rootView.findViewById(R.id.profileIV);
@@ -156,13 +160,16 @@ public class ProfileTab extends Fragment{
         fullnameTV = rootView.findViewById(R.id.fullnameTV);
         bioTV = rootView.findViewById(R.id.bioTV);
         postsTV = rootView.findViewById(R.id.postsTV);
-        profileLV = rootView.findViewById(R.id.profileLV);
         dialogBox = new DialogBox(getContext());
         isPlaying = false;
         loadingPB = (ProgressBar) rootView.findViewById(R.id.progressbar);
         loadingPB.setVisibility(View.VISIBLE);
         userObject = ((TabActivity) getActivity()).userObject;
         postObject = ((TabActivity) getActivity()).postObject;
+        recordAudioMenu = new Dialog(getContext(), R.style.CustomDialog);
+        playAudioMenu = new Dialog(getContext(), R.style.CustomDialog);
+        settingsMenu = new Dialog(getContext(), R.style.CustomDialog);
+        recyclerView = rootView.findViewById(R.id.profileRV);
         profileTabInterface = new ProfileTabInterface() {
             @Override
             public void setProfileTabProfilePic(Bitmap result) {
@@ -174,16 +181,14 @@ public class ProfileTab extends Fragment{
             }
 
             @Override
-            public void gotProfileAudio(String type,JSONObject user)
+            public void gotProfileAudio(JSONObject user)
             {
                 userObject = user;
-                Log.d(TAG,"type is = " + type);
                 profileAudioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp";
                 profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
                 profilemediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        //   rippleBackground.stopRippleAnimation();
                         profileIV.setAnimation(null);
                         profileplayIV.setVisibility(View.VISIBLE);
                         stopIV.setVisibility(View.INVISIBLE);
@@ -191,32 +196,27 @@ public class ProfileTab extends Fragment{
                 });
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-                if(type.contains("profile")) {
+                if(playAudioMenu.isShowing()) {
                     recordAudioMenu.dismiss();
                     playAudioMenu.dismiss();
                     dialogBox.createDialog("Changed Audio","You have sucessfully updated your Listn Audio Profile","good");
                 }
+
             }
 
             @Override
             public void loadListView(ArrayList<String> audioFileList) {
               for(int i = 0; i < audioFileList.size(); i++) {
                   try {
+                      Log.d(TAG,"adding to recycle url = " + audioFileList.get(i));
                       adapter.add(new ProfileDataProvider(userObject.getString("username"), audioFileList.get(i), (String) postObject.getJSONArray("postDate").get(i)));
                   } catch (JSONException e) {
                       e.printStackTrace();
                   }
               }
+                adapter.notifyDataSetChanged();
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-                mainholderSV.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mainholderSV.scrollTo(0, 0);
-                        mainholderSV.pageScroll(View.FOCUS_UP);
-                        mainholderSV.smoothScrollTo(0,0);
-                    }
-                });
 
             }
 
@@ -277,16 +277,33 @@ public class ProfileTab extends Fragment{
 
             }
 
+            @Override
+            public void gotPostAudio(JSONObject post) throws JSONException {
+                Log.d(TAG,"audio being added to listview path is = " + post.getString("audioPath"));
+                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("audioPath"),post.getString("postDate")));
+                recyclerView.smoothScrollToPosition(0);
+                recordAudioMenu.dismiss();
+                playAudioMenu.dismiss();
+                adapter.notifyDataSetChanged();
+            }
+
         };
         profilePic = BitmapFactory.decodeResource(getContext().getResources(),
                 R.mipmap.noprofilepic);
         requests = new ProfileAsyncRequests(profileTabInterface);
-        adapter = new ProfileAdapter(getContext(),R.layout.single_postview,profilePic);
-        profileLV.setAdapter(adapter);
+        adapter = new ProfileAdapter(profilePic,getContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        recyclerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
         audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + generateID() + ".3gp";
-
-
         Log.d(TAG,"userobject = " + userObject.toString());
 
         fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
@@ -323,7 +340,7 @@ public class ProfileTab extends Fragment{
                 getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.VISIBLE);
-                requests.downloadAudio(userObject,"none");
+                requests.downloadAudio(userObject,"profile");
             }
             try {
                 if(postObject.getJSONArray("postSource").length() > 0)
@@ -419,7 +436,6 @@ public class ProfileTab extends Fragment{
                     profilemediaPlayer.reset();
                     profileIV.setAnimation(null);
                     gotProfileAudio();
-                    //      rippleBackground.stopRippleAnimation();
                 }
             }
         });
@@ -595,7 +611,6 @@ public class ProfileTab extends Fragment{
         profilemediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                //   rippleBackground.stopRippleAnimation();
                 profileIV.setAnimation(null);
                 profileplayIV.setVisibility(View.VISIBLE);
                 stopIV.setVisibility(View.INVISIBLE);
@@ -846,9 +861,10 @@ public class ProfileTab extends Fragment{
               try {
                   JSONObject headers = new JSONObject();
                   String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
-                  headers.put("date",currentDateTimeString);
+                  headers.put("postDate",currentDateTimeString);
                   headers.put("username",userObject.getString("username"));
                   headers.put("audiofilename",newPostID);
+                  Log.d(TAG,"postdate = " + currentDateTimeString);
                   if(typeofAudio.contains("post")) requests.uploadAudioPost(audioPostPath,headers.toString());
                   else if(typeofAudio.contains("profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
                 } catch (Exception e) {

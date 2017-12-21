@@ -1,119 +1,137 @@
 package com.example.mohsin.listn;
 
-import android.app.Dialog;
+/**
+ * Created by mabbasi on 12/20/2017.
+ */
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.skyfishjy.library.RippleBackground;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-/**
- * Created by mabbasi on 12/6/2017.
- */
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHolder>  {
 
 
-class ProfileAdapter extends ArrayAdapter<ProfileDataProvider> {
-
-    Context CTX;
+    private static final String TAG = "ProfileADAPTER";
     Bitmap profilePic;
-    ArrayList<MediaPlayer> mediaPlayerList;
+    ArrayList<String> mediaPlayerList;
+    ArrayList<ProfileDataProvider> dataProviderList;
+    Context CTX;
+    MediaPlayer mp;
+    int currPlaying;
 
-    private static class ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView playIV;
         ImageView stopIV;
         ImageView profileIV;
         TextView usernameTV;
         TextView dateTV;
         TextView listnsTV;
-        RippleBackground rippleBackground;
+        String path;
 
+        public MyViewHolder(View view) {
+            super(view);
+            playIV = itemView.findViewById(R.id.playIV);
+            stopIV = itemView.findViewById(R.id.stopIV);
+            usernameTV = itemView.findViewById(R.id.usernameTV);
+            dateTV = itemView.findViewById(R.id.dateTV);
+            listnsTV = itemView.findViewById(R.id.listnsTV);
+            profileIV = itemView.findViewById(R.id.profileIV);
+        }
     }
 
-    public List<ProfileDataProvider> post_list = new ArrayList<ProfileDataProvider>();
 
-    public ProfileAdapter(Context context,int resource,Bitmap profilePic) {
-        super(context, resource);
-        CTX = context;
+    public ProfileAdapter(Bitmap profilePic, Context CTX) {
         this.profilePic = profilePic;
-        mediaPlayerList = new ArrayList<MediaPlayer>();
+        mediaPlayerList = new ArrayList<String>();
+        dataProviderList = new ArrayList<ProfileDataProvider>();
+        this.CTX = CTX;
+        currPlaying = -1;
     }
 
-    @Override
     public void add(ProfileDataProvider object) {
-        post_list.add(object);
-        super.add(object);
+        dataProviderList.add(0,object);
+        mediaPlayerList.add(0,object.audioPath);
+        notifyItemInserted(0);
     }
 
     @Override
-    public ProfileDataProvider getItem(int position) {
-
-        return post_list.get(position);
+    public ProfileAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(CTX)
+                .inflate(R.layout.single_postview, parent, false);
+        return new MyViewHolder(itemView);
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final ViewHolder holder;
-        if (convertView == null) {
-            LayoutInflater inflator = (LayoutInflater) CTX.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflator.inflate(R.layout.single_postview, parent, false);
-            holder = new ViewHolder();
-            holder.playIV = convertView.findViewById(R.id.playIV);
-            holder.stopIV = convertView.findViewById(R.id.stopIV);
-            holder.usernameTV = convertView.findViewById(R.id.usernameTV);
-            holder.dateTV = convertView.findViewById(R.id.dateTV);
-            holder.listnsTV = convertView.findViewById(R.id.listnsTV);
-            holder.profileIV = convertView.findViewById(R.id.profileIV);
-            convertView.setTag(holder);
+    public void onBindViewHolder(final ProfileAdapter.MyViewHolder holder,final int position) {
+
+        final ProfileDataProvider provider = dataProviderList.get(position);
+        if(currPlaying == position)
+        {
+            holder.stopIV.setVisibility(View.VISIBLE);
+            holder.playIV.setVisibility(View.INVISIBLE);
         }
         else
-            {
-            holder = (ViewHolder) convertView.getTag();
-        }
-
-        ProfileDataProvider provider = getItem(position);
-        if(provider!=null)
         {
-            holder.usernameTV.setText(provider.username);
-            holder.dateTV.setText(provider.date);
+            holder.stopIV.setVisibility(View.INVISIBLE);
+            holder.playIV.setVisibility(View.VISIBLE);
         }
+        holder.usernameTV.setText(provider.username);
+        holder.dateTV.setText(provider.date);
         holder.playIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerList.get(position).start();
+                if(currPlaying != -1)
+                {
+                    mp.stop();
+                    mp.release();
+                }
+                    currPlaying = position;
+                    mp = MediaPlayer.create(CTX, Uri.parse(mediaPlayerList.get(position)));
+                    mp.start();
+                    holder.stopIV.setVisibility(View.VISIBLE);
+                    holder.playIV.setVisibility(View.INVISIBLE);
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            holder.stopIV.setVisibility(View.INVISIBLE);
+                            holder.playIV.setVisibility(View.VISIBLE);
+                            mp.release();
+                            currPlaying = -1;
+                        }
+                    });
             }
         });
+
         holder.stopIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerList.get(position).stop();
+                if(currPlaying == position) {
+                    mp.stop();
+                    mp.release();
+                }
+                holder.stopIV.setVisibility(View.INVISIBLE);
+                holder.playIV.setVisibility(View.VISIBLE);
+                currPlaying = -1;
             }
         });
         holder.dateTV.setText(provider.date);
         holder.profileIV.setImageBitmap(profilePic);
-        MediaPlayer temp = MediaPlayer.create(CTX, Uri.parse(provider.audioPath));
-        mediaPlayerList.add(temp);
-        return convertView;
 
     }
 
 
+
+    @Override
+    public int getItemCount() {
+        return dataProviderList.size();
+    }
 }

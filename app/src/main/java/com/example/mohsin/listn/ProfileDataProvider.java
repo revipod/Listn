@@ -17,7 +17,6 @@ class ProfileDataProvider {
 
     ProfileDataProvider(String username, String audioPath,String date)
     {
-        Log.d(TAG,"audiopath is = " + audioPath);
         this.username = username;
         this.audioPath = audioPath;
         this.date = date;

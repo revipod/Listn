@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public interface ProfileTabInterface
 {
     void setProfileTabProfilePic(Bitmap result);
-    void gotProfileAudio(String profile, JSONObject result);
+    void gotProfileAudio(JSONObject user);
     void loadListView(ArrayList<String> audioFileList);
     void setprofileImagePath(JSONObject user);
     void problemSettingProfilePic();
@@ -23,4 +23,5 @@ public interface ProfileTabInterface
     void problemChangingSettings();
     void setProfileAudioPath(JSONObject user);
     void problemProfileAudioPath();
+    void gotPostAudio(JSONObject path) throws JSONException;
 }
