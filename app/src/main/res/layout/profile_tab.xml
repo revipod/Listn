@@ -9,24 +9,23 @@
 
     <ProgressBar
         android:layout_alignParentTop="true"
-        android:visibility="gone"
+        android:background="#ffffff"
         android:id="@+id/progressbar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         android:indeterminate="true"
         android:max="100"
-        android:backgroundTint="#FFFFFF"
+        android:backgroundTint="#ffffff"
         android:indeterminateTint="#1a09d6"
         />
 
-
- <!--   <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/maino"
         android:layout_below="@+id/progressbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
--->
+
         <RelativeLayout
             android:id="@+id/topholderRL"
             android:layout_marginTop="3dp"
@@ -295,22 +294,23 @@
             </LinearLayout>
 
 
+            <android.support.v7.widget.RecyclerView
+                android:layout_below="@+id/onyourmindLL"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:id="@+id/profileRV"
+                android:background="#f2f2f2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            android:scrollbars="vertical" />
+
 
         </RelativeLayout>
 
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_below="@+id/topholderRL"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:id="@+id/profileRV"
-        android:background="#f2f2f2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical" />
 
 
-   <!-- </ScrollView>
--->
+
+</android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

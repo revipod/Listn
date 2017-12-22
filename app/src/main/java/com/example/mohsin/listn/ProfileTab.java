@@ -176,8 +176,6 @@ public class ProfileTab extends Fragment{
                 adapter.profilePic = result;
                 profilePic = result;
                 profileIV.setImageBitmap(profilePic);
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                loadingPB.setVisibility(View.GONE);
             }
 
             @Override
@@ -194,8 +192,6 @@ public class ProfileTab extends Fragment{
                         stopIV.setVisibility(View.INVISIBLE);
                     }
                 });
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                loadingPB.setVisibility(View.GONE);
                 if(playAudioMenu.isShowing()) {
                     recordAudioMenu.dismiss();
                     playAudioMenu.dismiss();
@@ -296,10 +292,16 @@ public class ProfileTab extends Fragment{
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        recyclerView.setOnClickListener(new View.OnClickListener() {
+        recyclerView.setHasFixedSize(false);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false){
             @Override
-            public void onClick(View view) {
+            public boolean canScrollHorizontally() {
+                return false;
+            }
 
+            @Override
+            public boolean canScrollVertically() {
+                return false;
             }
         });
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
@@ -334,7 +336,7 @@ public class ProfileTab extends Fragment{
             if(userObject.getString("profileaudio").contains("NoAudio"))
             {
 
-        }
+            }
             else
             {
                 getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
@@ -345,6 +347,9 @@ public class ProfileTab extends Fragment{
             try {
                 if(postObject.getJSONArray("postSource").length() > 0)
                 {
+                    getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.VISIBLE);
                     requests.downloadAudioArray(postObject.getJSONArray("postSource"),postObject.getJSONArray("postType"));
                 }
                 else
@@ -368,6 +373,7 @@ public class ProfileTab extends Fragment{
             str = new SpannableString(boldText + normalText );
             str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             listeningTV.setText(str);
+            boldText = String.valueOf(postObject.getJSONArray("postSource").length()) + "\n";
             str = new SpannableString(boldText + "Posts" );
             str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             postsTV.setText(str);

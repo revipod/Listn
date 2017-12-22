@@ -72,7 +72,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(final ProfileAdapter.MyViewHolder holder,final int position) {
-
         final ProfileDataProvider provider = dataProviderList.get(position);
         if(currPlaying == position)
         {
@@ -93,6 +92,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                 {
                     mp.stop();
                     mp.release();
+                    notifyItemChanged(currPlaying);
                 }
                     currPlaying = position;
                     mp = MediaPlayer.create(CTX, Uri.parse(mediaPlayerList.get(position)));
@@ -108,6 +108,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                             currPlaying = -1;
                         }
                     });
+
             }
         });
 
