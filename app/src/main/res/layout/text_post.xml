@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="30dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsmainholderRL"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="@drawable/roundrectangle_background_recordaudiomenu">
+
+
+    <RelativeLayout
+        android:focusable="true"
+        android:id="@+id/topbarRL"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="#f2f2f2">
+
+        <ImageView
+            android:id="@+id/saveIV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_weight="1"
+            android:src="@mipmap/check" />
+
+
+        <TextView
+            android:textColor="#919191"
+            android:textStyle="bold"
+            android:selectAllOnFocus="false"
+            android:linksClickable="false"
+            android:autoLink="all"
+            android:id="@+id/newpostTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/new_text_post" />
+
+
+        <ImageView
+            android:id="@+id/closeIV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/saveIV"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:src="@mipmap/close" />
+
+
+    </RelativeLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_margin="10dp"
+        android:id="@+id/profileIV"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/topbarRL"
+        android:layout_centerHorizontal="true"
+        android:src="@mipmap/mohsin" />
+
+    <EditText
+        android:layout_margin="10dp"
+        android:background="@android:color/transparent"
+        android:hint="Share a new post"
+        android:id="@+id/textpostET"
+        android:layout_below="@+id/profileIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+</RelativeLayout>

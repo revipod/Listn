@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,6 +76,7 @@ public class ProfileTab extends Fragment{
     RelativeLayout imagePostRL;
     RelativeLayout textPostRL;
     RelativeLayout topholderRL;
+    NestedScrollView mainNSV;
     RecordAudio audioRecorder;
     ImageView profileplayIV;
     ImageView postplayIV;
@@ -102,6 +104,9 @@ public class ProfileTab extends Fragment{
     String audioPostPath;
     String newPostID;
     String typeofAudio;
+    String boldText;
+    SpannableString str;
+
 
     SeekBar seekBar;
 
@@ -110,6 +115,8 @@ public class ProfileTab extends Fragment{
     long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
 
     int Seconds, Minutes, MilliSeconds ;
+
+    int numofPosts;
 
     double durationseconds;
 
@@ -130,12 +137,14 @@ public class ProfileTab extends Fragment{
     Dialog recordAudioMenu;
     Dialog playAudioMenu;
     Dialog settingsMenu;
+    Dialog textPostMenu;
 
     ProfileAdapter adapter;
 
     ProgressBar loadingPB;
 
     RecyclerView recyclerView;
+
 
 
 
@@ -150,6 +159,7 @@ public class ProfileTab extends Fragment{
         imagePostRL = rootView.findViewById(R.id.imagepostRL);
         textPostRL = rootView.findViewById(R.id.textpostRL);
         topholderRL = rootView.findViewById(R.id.topholderRL);
+        mainNSV = rootView.findViewById(R.id.mainNSV);
         profileplayIV =  rootView.findViewById(R.id.playIV);
         stopIV =  rootView.findViewById(R.id.stopIV);
         profileIV = rootView.findViewById(R.id.profileIV);
@@ -210,10 +220,10 @@ public class ProfileTab extends Fragment{
                       e.printStackTrace();
                   }
               }
-                adapter.notifyDataSetChanged();
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-
+                mainNSV.setVisibility(View.VISIBLE);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -281,6 +291,14 @@ public class ProfileTab extends Fragment{
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
                 adapter.notifyDataSetChanged();
+                numofPosts++;
+                boldText = numofPosts + "\n";
+                str = new SpannableString(boldText + "Posts" );
+                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                postsTV.setText(str);
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
+
             }
 
         };
@@ -292,7 +310,6 @@ public class ProfileTab extends Fragment{
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false){
             @Override
             public boolean canScrollHorizontally() {
@@ -307,7 +324,6 @@ public class ProfileTab extends Fragment{
         profileAudioPath = (Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp");
         audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + generateID() + ".3gp";
         Log.d(TAG,"userobject = " + userObject.toString());
-
         fadeInAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fadeanimation);
         fadeInAnimation.setRepeatMode(Animation.REVERSE);
 
@@ -328,6 +344,7 @@ public class ProfileTab extends Fragment{
             }
             else
             {
+                mainNSV.setVisibility(View.INVISIBLE);
                getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                loadingPB.setVisibility(View.VISIBLE);
@@ -339,6 +356,7 @@ public class ProfileTab extends Fragment{
             }
             else
             {
+                mainNSV.setVisibility(View.INVISIBLE);
                 getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.VISIBLE);
@@ -347,6 +365,7 @@ public class ProfileTab extends Fragment{
             try {
                 if(postObject.getJSONArray("postSource").length() > 0)
                 {
+                    mainNSV.setVisibility(View.INVISIBLE);
                     getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     loadingPB.setVisibility(View.VISIBLE);
@@ -354,6 +373,7 @@ public class ProfileTab extends Fragment{
                 }
                 else
                 {
+                    mainNSV.setVisibility(View.VISIBLE);
                     getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     loadingPB.setVisibility(View.GONE);
                 }
@@ -363,9 +383,9 @@ public class ProfileTab extends Fragment{
             usernameTV.setText( "@" + userObject.getString("username"));
             fullnameTV.setText(userObject.getString("fullname"));
             bioTV.setText(userObject.getString("bio"));
-            String boldText  = String.valueOf(userObject.getJSONArray("followers").length()) + "\n";
+            boldText  = String.valueOf(userObject.getJSONArray("followers").length()) + "\n";
             String normalText = "Listeners";
-            SpannableString str = new SpannableString(boldText + normalText);
+            str = new SpannableString(boldText + normalText);
             str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             listenersTV.setText(str);
             boldText = String.valueOf(userObject.getJSONArray("following").length()) + "\n";
@@ -374,6 +394,7 @@ public class ProfileTab extends Fragment{
             str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             listeningTV.setText(str);
             boldText = String.valueOf(postObject.getJSONArray("postSource").length()) + "\n";
+            numofPosts = postObject.getJSONArray("postSource").length();
             str = new SpannableString(boldText + "Posts" );
             str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             postsTV.setText(str);
@@ -394,6 +415,13 @@ public class ProfileTab extends Fragment{
             public void onClick(View view) {
                 typeofAudio = "post";
                 showRecordAudioMenu();
+            }
+        });
+
+        textPostRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTextPostMenu();
             }
         });
 
@@ -446,6 +474,27 @@ public class ProfileTab extends Fragment{
             }
         });
 
+    }
+
+    private void showTextPostMenu() {
+        textPostMenu = new Dialog(getContext(),R.style.CustomDialog);
+        textPostMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        textPostMenu.setCancelable(true);
+        textPostMenu.setContentView(R.layout.text_post);
+        textPostMenu.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        textPostMenu.show();
+        ImageView closeIV = textPostMenu.findViewById(R.id.closeIV);
+        EditText newPostET = textPostMenu.findViewById(R.id.textpostET);
+        ImageView textPostIV = textPostMenu.findViewById(R.id.profileIV);
+        newPostET.requestFocus();
+        textPostIV.setImageBitmap(profilePic);
+
+        closeIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                textPostMenu.dismiss();
+            }
+        });
     }
 
     private void loadSettings() throws JSONException {
@@ -871,6 +920,9 @@ public class ProfileTab extends Fragment{
                   headers.put("username",userObject.getString("username"));
                   headers.put("audiofilename",newPostID);
                   Log.d(TAG,"postdate = " + currentDateTimeString);
+                  getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                  loadingPB.setVisibility(View.VISIBLE);
                   if(typeofAudio.contains("post")) requests.uploadAudioPost(audioPostPath,headers.toString());
                   else if(typeofAudio.contains("profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
                 } catch (Exception e) {

@@ -116,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
 
     String profileAudioPath = "blank";
     String profilePicPath = "blank";
+    String usernameregexp = "^[a-zA-Z0-9._-]{5,20}$";
+    String passwordregex = "^[a-zA-Z0-9._!@#$%^&+=-]{5,20}$";
+    String fullnameregexp = "^[\\p{L} .'-]{2,25}+$";
     String email,password,fullname;
 
     JSONObject userData;
@@ -345,23 +348,28 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    JSONObject usernameParams = new JSONObject();
-                    try {
-                        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                        loadingPB.setVisibility(View.VISIBLE);
-                        usernameParams.put("username",usernameET.getText().toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if(usernameET.getText().toString().matches(usernameregexp)) {
+                        JSONObject usernameParams = new JSONObject();
+                        try {
+                            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            loadingPB.setVisibility(View.VISIBLE);
+                            usernameParams.put("username", usernameET.getText().toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            requests.checkUsername(usernameParams);
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    try {
-                        requests.checkUsername(usernameParams);
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    else
+                    {
+                        dialogBox.createDialog("Invalid Username","Please make sure your username is at least 5 characters, no spaces and contains only the following values a-z, A-Z, 0-9, period, dash and underscores.","bad");
                     }
-
                 }
             }
         });
@@ -400,39 +408,38 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if(fullnameET.getVisibility() == View.VISIBLE)
                     {
-                        if(fullnameET.length() < 3)
-                        {
-                            dialogBox.createDialog("Name", "Please insert a valid Full Name", "bad");
-                        }
-                        else
-                        {
-                            fullname = fullnameET.getText().toString().trim();
-                            fullnameET.setVisibility(View.GONE);
-                            regpasswordET.setVisibility(View.VISIBLE);
-                            additionalinfoTV.setText("Password");
-                            regpasswordET.requestFocus();
-                        }
+                            if(fullnameET.getText().toString().matches(fullnameregexp)) {
+                                fullname = fullnameET.getText().toString().trim();
+                                fullnameET.setVisibility(View.GONE);
+                                regpasswordET.setVisibility(View.VISIBLE);
+                                additionalinfoTV.setText("Password");
+                                regpasswordET.requestFocus();
+                            }
+                            else
+                            {
+                                dialogBox.createDialog("Invalid Name","Please make sure you've inserted a valid Name.","bad");
+                            }
                     }
                     else if(regpasswordET.getVisibility() == View.VISIBLE)
                     {
-                        if(regpasswordET.length() < 5)
-                        {
-                            dialogBox.createDialog("Password", "Please make sure your password is at least 5 characters", "bad");
-                        }
-                        else
-                        {
+                            if(regpasswordET.getText().toString().matches(passwordregex))
+                            {
                             password = regpasswordET.getText().toString().trim();
                             regpasswordET.setVisibility(View.GONE);
                             emailET.setVisibility(View.VISIBLE);
                             additionalinfoTV.setText("Email");
                             emailET.requestFocus();
                         }
+                        else
+                            {
+                                dialogBox.createDialog("Invalid password","Please make sure your password is between 5-20 characters and includes only letters from A-Z or numbers from 0-9 and no spaces. Only the following special characters are allowed ._!@#$%^&+=- .","bad");
+                            }
                     }
                     else if(emailET.getVisibility() == View.VISIBLE)
                     {
-                        if(emailET.length() < 5)
+                        if(emailET.length() < 5 || !emailET.getText().toString().contains("@"))
                         {
-                            dialogBox.createDialog("Email", "Please make sure you've insereted a valid email address.", "bad");
+                            dialogBox.createDialog("Email", "Please make sure you've inserted a valid email address.", "bad");
                         }
                         else
                         {

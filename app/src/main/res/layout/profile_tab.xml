@@ -21,12 +21,13 @@
         />
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/maino"
+        android:id="@+id/mainNSV"
         android:layout_below="@+id/progressbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:descendantFocusability="blocksDescendants"
             android:id="@+id/topholderRL"
             android:layout_marginTop="3dp"
             android:layout_width="match_parent"
