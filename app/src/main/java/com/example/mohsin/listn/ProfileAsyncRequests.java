@@ -169,6 +169,49 @@ class ProfileAsyncRequests {
     }
 
     @SuppressLint("StaticFieldLeak")
+    public void uploadTextPost(final JSONObject data) throws Exception {
+        Log.d(TAG, "About to upload Audio");
+        new AsyncTask<JSONObject, Void, JSONObject>() {
+
+            @Override
+            protected JSONObject doInBackground(JSONObject... jsonObjects) {
+                try {
+                    JSONObject result = webb
+                            .post("/uploadTextPost")
+                            .body(data)
+                            .connectTimeout(10 * 1000)
+                            .asJsonObject()
+                            .getBody();
+                    Log.d(TAG, "RESULT: " + result);
+                    return result;
+                } catch (Exception e) {
+                    Log.d(TAG, "EXCEPTION IS = " + e.toString());
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(JSONObject result) {
+                if (result != null) {
+                    try {
+                        if (result.getBoolean("posted"))
+                        {
+                            profileTabInterface.gotTextPost(data);
+                        }
+                        else {
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                }
+            }
+        }.execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
     public void uploadAudioPost(final String audioPath, final String headers) throws Exception {
         Log.d(TAG, "About to upload Audio");
         new AsyncTask<JSONObject, Void, JSONObject>() {
@@ -278,25 +321,22 @@ class ProfileAsyncRequests {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void downloadAudioArray(final JSONArray postSource, final JSONArray postType)
-    {
-        final ArrayList<String> audioFileList = new ArrayList<>();
+    public void downloadAudioArray(final JSONObject postObject) throws JSONException {
+        final JSONArray postType = postObject.getJSONArray("postType");
+        final JSONArray postSource = postObject.getJSONArray("postSource");
+        final ArrayList<String> dataFileList = new ArrayList<>();
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... strings) {
                 int count;
-                Log.d(TAG,"about to start getting audio");
                 for(int i = 0; i < postSource.length(); i++) {
                     try {
-                        Log.d(TAG,"about to start getting audio try posttype =  " + postType.toString());
+
                         if(postType.getString(i).contains("Audio")) {
-                            Log.d(TAG,"about to start getting audio try audiosource ");
                             String filename = postSource.getString(i).substring(postSource.getString(i).length() - 19, postSource.getString(i).length() - 4) + ".3gp";
-                            Log.d(TAG,"filename is = " + filename);
                             filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename;
-                            audioFileList.add(filename);
+                            dataFileList.add(filename);
                             try {
-                                Log.d(TAG,"url = " + postSource.getString(i));
                                 URL url = new URL(postSource.getString(i));
                                 URLConnection conexion = url.openConnection();
                                 conexion.connect();
@@ -319,6 +359,7 @@ class ProfileAsyncRequests {
                             } catch (Exception e) {
                             }
                         }
+                        else dataFileList.add(postSource.getString(i));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -329,7 +370,12 @@ class ProfileAsyncRequests {
             @Override
             protected void onPostExecute(String result)
             {
-                profileTabInterface.loadListView(audioFileList);
+                try {
+                    Log.d(TAG,"postSource is  " + postSource.toString());
+                    profileTabInterface.loadListView(dataFileList);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }.execute();
     }
@@ -417,4 +463,7 @@ class ProfileAsyncRequests {
             }
         }.execute();
     }
+
+
+
 }

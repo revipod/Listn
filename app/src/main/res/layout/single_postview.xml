@@ -6,7 +6,7 @@
     android:layout_marginRight="5dp"
     android:layout_marginTop="5dp"
     android:layout_width="match_parent"
-    android:layout_height="130dp">
+    android:layout_height="150dp">
 
 
 
@@ -31,12 +31,13 @@
 
     <TextView
         android:id="@+id/dateTV"
-        android:textSize="8sp"
-        android:text="2 hours ago"
-        android:layout_below="@+id/usernameTV"
-        android:layout_toRightOf="@+id/profileIV"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usernameTV"
+        android:layout_toEndOf="@+id/profileIV"
+        android:layout_toRightOf="@+id/profileIV"
+        android:text="2 hours ago"
+        android:textSize="8sp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -76,36 +77,27 @@
         android:visibility="invisible" />
 
     <ImageView
+        android:visibility="invisible"
         android:id="@+id/playIV"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_centerInParent="true"
         android:src="@mipmap/profileplay" />
 
-<!--
-    <cofm.skyfishjy.library.RippleBackground
-        android:id="@+id/rippleview"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_centerInParent="true"
-        app:rb_color="#ffedcc"
-        app:rb_duration="2000"
-        app:rb_radius="32dp"
-        app:rb_rippleAmount="4"
-        app:rb_scale="6">
-    </cofm.skyfishjy.library.RippleBackground>
--->
-
     <TextView
-        android:layout_margin="5dp"
-        android:id="@+id/listnsTV"
+        android:layout_marginTop="10dp"
+        android:visibility="invisible"
+        android:textSize="14sp"
+        android:id="@+id/textpostTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:text="55 Listns"
-        android:textSize="10sp" />
+        android:layout_below="@+id/dateTV"
+        android:layout_toEndOf="@+id/profileIV"
+        android:layout_toRightOf="@+id/profileIV"
+        android:text="test text test"
+        android:textColor="#a0a0a0" />
+
+
 
 
 

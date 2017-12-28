@@ -15,7 +15,7 @@ public interface ProfileTabInterface
 {
     void setProfileTabProfilePic(Bitmap result);
     void gotProfileAudio(JSONObject user);
-    void loadListView(ArrayList<String> audioFileList);
+    void loadListView(ArrayList<String> audioFileList) throws JSONException;
     void setprofileImagePath(JSONObject user);
     void problemSettingProfilePic();
     void setSettingProfilePic(Bitmap result);
@@ -24,4 +24,5 @@ public interface ProfileTabInterface
     void setProfileAudioPath(JSONObject user);
     void problemProfileAudioPath();
     void gotPostAudio(JSONObject path) throws JSONException;
+    void gotTextPost(JSONObject postText) throws JSONException;
 }

@@ -2,6 +2,7 @@ package com.example.mohsin.listn;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,18 +35,18 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.skyfishjy.library.RippleBackground;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -211,15 +212,22 @@ public class ProfileTab extends Fragment{
             }
 
             @Override
-            public void loadListView(ArrayList<String> audioFileList) {
-              for(int i = 0; i < audioFileList.size(); i++) {
-                  try {
-                      Log.d(TAG,"adding to recycle url = " + audioFileList.get(i));
-                      adapter.add(new ProfileDataProvider(userObject.getString("username"), audioFileList.get(i), (String) postObject.getJSONArray("postDate").get(i)));
-                  } catch (JSONException e) {
-                      e.printStackTrace();
-                  }
-              }
+            public void loadListView(ArrayList<String> dataFileList) throws JSONException {
+
+                JSONArray postType = postObject.getJSONArray("postType");
+                for(int i = 0; i < postType.length(); i++)
+                {
+                    if(postType.getString(i).contains("Audio"))
+                    {
+                        Log.d(TAG,"adding audio " + dataFileList.get(i));
+                        adapter.add(new ProfileDataProvider(userObject.getString("username"), dataFileList.get(i), (String) postObject.getJSONArray("postDate").getString(i), "Audio"));
+                    }
+                    else if (postType.getString(i).contains("Text"))
+                    {
+                        Log.d(TAG,"adding text " + dataFileList.get(i));
+                        adapter.add(new ProfileDataProvider(userObject.getString("username"),dataFileList.get(i),postObject.getJSONArray("postDate").getString(i),"Text"));
+                    }
+                }
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
                 mainNSV.setVisibility(View.VISIBLE);
@@ -266,6 +274,7 @@ public class ProfileTab extends Fragment{
                 aboutmeET.setText(user.getString("bio"));
                 fullnameTV.setText(user.getString("fullname"));
                 bioTV.setText(user.getString("bio"));
+                hideKeyboard();
             }
 
             @Override
@@ -286,8 +295,7 @@ public class ProfileTab extends Fragment{
             @Override
             public void gotPostAudio(JSONObject post) throws JSONException {
                 Log.d(TAG,"audio being added to listview path is = " + post.getString("audioPath"));
-                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("audioPath"),post.getString("postDate")));
-                recyclerView.smoothScrollToPosition(0);
+                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("audioPath"),post.getString("postDate"), "Audio"));
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
                 adapter.notifyDataSetChanged();
@@ -298,7 +306,27 @@ public class ProfileTab extends Fragment{
                 postsTV.setText(str);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
+                dialogBox.createDialog("Posted!","Your new voice post was sucessfully uploaded!","good");
 
+
+            }
+
+            @Override
+            public void gotTextPost(JSONObject post) throws JSONException {
+                Log.d(TAG,"text being added to listview path is = " + post.getString("postText"));
+                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("postText"),post.getString("postDate"),"Text"));
+                recyclerView.smoothScrollToPosition(0);
+                adapter.notifyDataSetChanged();
+                textPostMenu.dismiss();
+                numofPosts++;
+                boldText = numofPosts + "\n";
+                str = new SpannableString(boldText + "Posts" );
+                str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                postsTV.setText(str);
+                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                loadingPB.setVisibility(View.GONE);
+                dialogBox.createDialog("Posted!","Your new text post was sucessfully uploaded!","good");
+                hideKeyboard();
             }
 
         };
@@ -369,7 +397,7 @@ public class ProfileTab extends Fragment{
                     getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     loadingPB.setVisibility(View.VISIBLE);
-                    requests.downloadAudioArray(postObject.getJSONArray("postSource"),postObject.getJSONArray("postType"));
+                    requests.downloadAudioArray(postObject);
                 }
                 else
                 {
@@ -484,10 +512,33 @@ public class ProfileTab extends Fragment{
         textPostMenu.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         textPostMenu.show();
         ImageView closeIV = textPostMenu.findViewById(R.id.closeIV);
-        EditText newPostET = textPostMenu.findViewById(R.id.textpostET);
-        ImageView textPostIV = textPostMenu.findViewById(R.id.profileIV);
+        ImageView postIV = textPostMenu.findViewById(R.id.saveIV);
+        final EditText newPostET = textPostMenu.findViewById(R.id.textpostET);
+        postIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(newPostET.getText().toString().trim().length() < 1) dialogBox.createDialog("Empty","Your post seems to be empty.","bad");
+                else
+                {
+                    try {
+                        String postText = newPostET.getText().toString().trim();
+                        JSONObject data = new JSONObject();
+                        String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                        data.put("postDate", currentDateTimeString);
+                        data.put("username", userObject.getString("username"));
+                        data.put("postTextName", newPostID);
+                        data.put("postText",postText);
+                        Log.d(TAG, "postDate = " + currentDateTimeString);
+                        requests.uploadTextPost(data);
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         newPostET.requestFocus();
-        textPostIV.setImageBitmap(profilePic);
 
         closeIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -495,6 +546,8 @@ public class ProfileTab extends Fragment{
                 textPostMenu.dismiss();
             }
         });
+
+
     }
 
     private void loadSettings() throws JSONException {
@@ -1005,6 +1058,15 @@ public class ProfileTab extends Fragment{
             String currentDay = daysArray[day - 1];
             String generatedID = currentDay.substring(0, 3) + Month + dayOfMonth + year + milliseconds.substring(milliseconds.length() - 5, milliseconds.length());
             return generatedID;
+        }
+
+        public void hideKeyboard()
+        {
+            View view = getActivity().getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
         }
 
 }

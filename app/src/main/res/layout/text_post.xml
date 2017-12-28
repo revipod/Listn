@@ -6,7 +6,7 @@
     android:id="@+id/settingsmainholderRL"
     android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    android:background="@drawable/roundrectangle_background_recordaudiomenu">
+    android:background="#ffffff">
 
 
     <RelativeLayout
@@ -20,11 +20,11 @@
             android:id="@+id/saveIV"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_alignBottom="@+id/newpostTV"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginRight="14dp"
             android:layout_weight="1"
             android:src="@mipmap/check" />
 
@@ -42,32 +42,32 @@
             android:layout_marginTop="16dp"
             android:text="@string/new_text_post" />
 
-
         <ImageView
             android:id="@+id/closeIV"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_alignBottom="@+id/newpostTV"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/saveIV"
-            android:layout_marginLeft="15dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginLeft="14dp"
+            android:layout_marginStart="14dp"
             android:src="@mipmap/close" />
 
 
     </RelativeLayout>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_margin="10dp"
-        android:id="@+id/profileIV"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_below="@+id/topbarRL"
-        android:layout_centerHorizontal="true"
-        android:src="@mipmap/mohsin" />
+        <RelativeLayout
+            android:background="@drawable/notepad_background"
+            android:layout_below="@+id/topbarRL"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+
+
+
 
     <EditText
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:background="@android:color/transparent"
         android:hint="Share a new post"
         android:id="@+id/textpostET"
@@ -75,6 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    </RelativeLayout>
 
 
 
