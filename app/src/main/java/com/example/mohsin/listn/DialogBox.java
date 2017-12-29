@@ -73,12 +73,6 @@ public class DialogBox {
         dialog.show();
     }
 
-    public void loadingDialog()
-    {
-        loadingScreen = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        loadingScreen.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        loadingScreen.setCancelable(false);
-        loadingScreen.setContentView(R.layout.loading_screen);
-    }
+
 
 }

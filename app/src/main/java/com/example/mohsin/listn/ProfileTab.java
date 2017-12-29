@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -145,10 +146,7 @@ public class ProfileTab extends Fragment{
     ProgressBar loadingPB;
 
     RecyclerView recyclerView;
-
-
-
-
+    String imageType;
 
 
     @Override
@@ -207,6 +205,11 @@ public class ProfileTab extends Fragment{
                     recordAudioMenu.dismiss();
                     playAudioMenu.dismiss();
                     dialogBox.createDialog("Changed Audio","You have sucessfully updated your Listn Audio Profile","good");
+                }
+                if(typeofAudio.contains("Profile"))
+                {
+                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                    loadingPB.setVisibility(View.GONE);
                 }
 
             }
@@ -274,7 +277,11 @@ public class ProfileTab extends Fragment{
                 aboutmeET.setText(user.getString("bio"));
                 fullnameTV.setText(user.getString("fullname"));
                 bioTV.setText(user.getString("bio"));
-                hideKeyboard();
+                View settingsView = settingsMenu.getCurrentFocus();
+                if (settingsView != null) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(settingsView.getWindowToken(), 0);
+                }
             }
 
             @Override
@@ -326,10 +333,15 @@ public class ProfileTab extends Fragment{
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
                 dialogBox.createDialog("Posted!","Your new text post was sucessfully uploaded!","good");
-                hideKeyboard();
+                View textPostView = textPostMenu.getCurrentFocus();
+                if (textPostView != null) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textPostView.getWindowToken(), 0);
+                }
             }
 
         };
+        typeofAudio = "Nothing";
         profilePic = BitmapFactory.decodeResource(getContext().getResources(),
                 R.mipmap.noprofilepic);
         requests = new ProfileAsyncRequests(profileTabInterface);
@@ -441,8 +453,15 @@ public class ProfileTab extends Fragment{
         voicePostRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                typeofAudio = "post";
+                typeofAudio = "Post";
                 showRecordAudioMenu();
+            }
+        });
+
+        imagePostRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showImagePostMenu();
             }
         });
 
@@ -504,6 +523,11 @@ public class ProfileTab extends Fragment{
 
     }
 
+    private void showImagePostMenu() {
+        imageType = "Post";
+        loadCamera();
+    }
+
     private void showTextPostMenu() {
         textPostMenu = new Dialog(getContext(),R.style.CustomDialog);
         textPostMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -513,6 +537,7 @@ public class ProfileTab extends Fragment{
         textPostMenu.show();
         ImageView closeIV = textPostMenu.findViewById(R.id.closeIV);
         ImageView postIV = textPostMenu.findViewById(R.id.saveIV);
+        RelativeLayout textpostRL = textPostMenu.findViewById(R.id.textpostRL);
         final EditText newPostET = textPostMenu.findViewById(R.id.textpostET);
         postIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -543,10 +568,21 @@ public class ProfileTab extends Fragment{
         closeIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                View textPostView = textPostMenu.getCurrentFocus();
+                if (textPostView != null) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textPostView.getWindowToken(), 0);
+                }
                 textPostMenu.dismiss();
             }
         });
 
+        textpostRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                newPostET.requestFocus();
+            }
+        });
 
     }
 
@@ -577,7 +613,7 @@ public class ProfileTab extends Fragment{
         changeProfileListnLV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                typeofAudio = "profile";
+                typeofAudio = "Profile";
                 showRecordAudioMenu();
             }
         });
@@ -626,7 +662,8 @@ public class ProfileTab extends Fragment{
         changePicBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setProfilePic();
+                imageType = "Profile";
+                loadCamera();
             }
         });
 
@@ -659,7 +696,7 @@ public class ProfileTab extends Fragment{
 
 
 
-    private void setProfilePic() {
+    private void loadCamera() {
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         this.startActivityForResult(intent, CAMERA);
     }
@@ -674,11 +711,35 @@ public class ProfileTab extends Fragment{
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
             String path = saveImage(thumbnail);
             thumbnail.recycle();
-            try {
-                Log.d(TAG,"calling async upload");
-                requests.changeProfilePic(path,userObject.getString("username"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            if(imageType.contains("Profile")) {
+                try {
+                    Log.d(TAG, "calling async upload");
+                    requests.changeProfilePic(path, userObject.getString("username"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (imageType.contains("Post")) {
+                final AlertDialog builder;
+                builder = new AlertDialog.Builder(getContext()).create();
+                builder.setTitle("Add Audio");
+                builder.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        typeofAudio = "Image";
+                        showRecordAudioMenu();
+                    }
+                });
+                builder.setButton(Dialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.setMessage("Do you want to add a audio description to this picture?");
+                builder.setCancelable(false);
+                builder.show();
+
             }
         }
     }
@@ -845,6 +906,10 @@ public class ProfileTab extends Fragment{
             @Override
             public void onCancel(DialogInterface dialog)
             {
+                if(typeofAudio.contains("Image"))
+                {
+
+                }
                 recordAudioMenu.dismiss();
                 timerTV.setText("00:00:00");
 
@@ -976,8 +1041,9 @@ public class ProfileTab extends Fragment{
                   getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                           WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                   loadingPB.setVisibility(View.VISIBLE);
-                  if(typeofAudio.contains("post")) requests.uploadAudioPost(audioPostPath,headers.toString());
-                  else if(typeofAudio.contains("profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
+                  if(typeofAudio.contains("Post")) requests.uploadAudioPost(audioPostPath,headers.toString());
+                  else if(typeofAudio.contains("Profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
+                  else if(typeofAudio.contains("Image")) requests.uploadImagePost();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1060,13 +1126,6 @@ public class ProfileTab extends Fragment{
             return generatedID;
         }
 
-        public void hideKeyboard()
-        {
-            View view = getActivity().getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-        }
+
 
 }

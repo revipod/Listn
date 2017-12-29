@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHolder>  {
+public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private static final String TAG = "ProfileADAPTER";
@@ -29,25 +29,40 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
     MediaPlayer mp;
     int currPlaying;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+
+
+    public class audioViewHolder extends RecyclerView.ViewHolder {
         ImageView playIV;
         ImageView stopIV;
         ImageView profileIV;
         TextView usernameTV;
         TextView dateTV;
-        TextView textTV;
 
-        public MyViewHolder(View view) {
+        public audioViewHolder (View view) {
             super(view);
             playIV = itemView.findViewById(R.id.playIV);
             stopIV = itemView.findViewById(R.id.stopIV);
             usernameTV = itemView.findViewById(R.id.usernameTV);
             dateTV = itemView.findViewById(R.id.dateTV);
             profileIV = itemView.findViewById(R.id.profileIV);
-            textTV = itemView.findViewById(R.id.textpostTV);
         }
     }
 
+    public class textViewHolder  extends RecyclerView.ViewHolder {
+
+        ImageView profileIV;
+        TextView usernameTV;
+        TextView dateTV;
+        TextView textTV;
+
+        public textViewHolder(View view) {
+            super(view);
+            usernameTV = itemView.findViewById(R.id.usernameTV);
+            dateTV = itemView.findViewById(R.id.dateTV);
+            profileIV = itemView.findViewById(R.id.profileIV);
+            textTV = itemView.findViewById(R.id.textpostTV);
+        }
+    }
 
     public ProfileAdapter(Bitmap profilePic, Context CTX) {
         this.profilePic = profilePic;
@@ -57,6 +72,20 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         currPlaying = -1;
     }
 
+
+    @Override
+    public int getItemViewType(int position) {
+
+        if(dataProviderList.get(position).type.contains("Audio")){
+            return 1;
+        }
+        else if (dataProviderList.get(position).type.contains("Text")){
+            return 2;
+        }
+        return 0;
+    }
+
+
     public void add(ProfileDataProvider object) {
         dataProviderList.add(0,object);
         if(object.type.contains("Audio")) dataFileList.add(0,object.audioPath);
@@ -65,79 +94,97 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
         notifyItemInserted(0);
     }
 
+
     @Override
-    public ProfileAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(CTX)
-                .inflate(R.layout.single_postview, parent, false);
-        return new MyViewHolder(itemView);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case 1:
+                {
+                    View itemView = LayoutInflater.from(CTX)
+                            .inflate(R.layout.single_audiopost, parent, false);
+                return new audioViewHolder(itemView);
+            }
+            case 2: {
+                View itemView = LayoutInflater.from(CTX)
+                        .inflate(R.layout.single_textpost, parent, false);
+                return new textViewHolder(itemView);
+            }
+        }
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(final ProfileAdapter.MyViewHolder holder,final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final ProfileDataProvider provider = dataProviderList.get(position);
-        holder.dateTV.setText(provider.date);
-        holder.profileIV.setImageBitmap(profilePic);
-        if(provider.type.contains("Audio")) {
-            holder.playIV.setVisibility(View.VISIBLE);
-            holder.stopIV.setVisibility(View.INVISIBLE);
-            holder.textTV.setVisibility(View.INVISIBLE);
-            if (currPlaying == position) {
-                holder.stopIV.setVisibility(View.VISIBLE);
-                holder.playIV.setVisibility(View.INVISIBLE);
-            } else {
-                holder.stopIV.setVisibility(View.INVISIBLE);
-                holder.playIV.setVisibility(View.VISIBLE);
-            }
-            holder.usernameTV.setText(provider.username);
-            holder.playIV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d(TAG,"datafilelist is = " + dataFileList.get(position));
-                    if (currPlaying != -1) {
-                        mp.stop();
-                        mp.release();
-                        notifyItemChanged(currPlaying);
-                    }
-                    currPlaying = position;
-                    mp = MediaPlayer.create(CTX, Uri.parse(dataFileList.get(position)));
-                    mp.start();
-                    holder.stopIV.setVisibility(View.VISIBLE);
-                    holder.playIV.setVisibility(View.INVISIBLE);
-                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mediaPlayer) {
-                            holder.stopIV.setVisibility(View.INVISIBLE);
-                            holder.playIV.setVisibility(View.VISIBLE);
+        switch (holder.getItemViewType()) {
+            case 1:
+                final int currPosition = position;
+                final audioViewHolder audioPostView = (audioViewHolder)holder;
+                audioPostView.dateTV.setText(provider.date);
+                audioPostView.profileIV.setImageBitmap(profilePic);
+                audioPostView.usernameTV.setText(provider.username);
+                audioPostView.playIV.setVisibility(View.VISIBLE);
+                audioPostView.stopIV.setVisibility(View.INVISIBLE);
+                if (currPlaying == currPosition) {
+                    audioPostView.stopIV.setVisibility(View.VISIBLE);
+                    audioPostView.playIV.setVisibility(View.INVISIBLE);
+                } else {
+                    audioPostView.stopIV.setVisibility(View.INVISIBLE);
+                    audioPostView.playIV.setVisibility(View.VISIBLE);
+                }
+                audioPostView.playIV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d(TAG,"datafilelist is = " + dataFileList.get(currPosition));
+                        if (currPlaying != -1) {
+                            mp.stop();
                             mp.release();
-                            currPlaying = -1;
+                            notifyItemChanged(currPlaying);
                         }
-                    });
+                        currPlaying = currPosition;
+                        mp = MediaPlayer.create(CTX, Uri.parse(dataFileList.get(currPosition)));
+                        mp.start();
+                        audioPostView.stopIV.setVisibility(View.VISIBLE);
+                        audioPostView.playIV.setVisibility(View.INVISIBLE);
+                        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                audioPostView.stopIV.setVisibility(View.INVISIBLE);
+                                audioPostView.playIV.setVisibility(View.VISIBLE);
+                                mp.release();
+                                currPlaying = -1;
+                            }
+                        });
 
-                }
-            });
-
-            holder.stopIV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (currPlaying == position) {
-                        mp.stop();
-                        mp.release();
                     }
-                    holder.stopIV.setVisibility(View.INVISIBLE);
-                    holder.playIV.setVisibility(View.VISIBLE);
-                    currPlaying = -1;
-                }
-            });
-            holder.dateTV.setText(provider.date);
-        }
-        else if(provider.type.contains("Text"))
-        {
-            holder.playIV.setVisibility(View.INVISIBLE);
-            holder.stopIV.setVisibility(View.INVISIBLE);
-            holder.textTV.setVisibility(View.VISIBLE);
-            holder.textTV.setText(dataFileList.get(position));
+                });
 
+                audioPostView.stopIV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (currPlaying == currPosition) {
+                            mp.stop();
+                            mp.release();
+                        }
+                        audioPostView.stopIV.setVisibility(View.INVISIBLE);
+                        audioPostView.playIV.setVisibility(View.VISIBLE);
+                        currPlaying = -1;
+                    }
+                });
+                break;
+
+            case 2:
+                textViewHolder textPostView = (textViewHolder)holder;
+                textPostView.dateTV.setText(provider.date);
+                textPostView.profileIV.setImageBitmap(profilePic);
+                textPostView.usernameTV.setText(provider.username);
+                textPostView.textTV.setVisibility(View.VISIBLE);
+                textPostView.textTV.setText(dataFileList.get(position));
+                break;
         }
+
+
+
     }
 
 

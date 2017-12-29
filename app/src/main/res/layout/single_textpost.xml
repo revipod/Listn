@@ -68,25 +68,9 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/stopIV"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_centerInParent="true"
-        android:src="@mipmap/profilestop"
-        android:visibility="invisible" />
-
-    <ImageView
-        android:visibility="invisible"
-        android:id="@+id/playIV"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_centerInParent="true"
-        android:src="@mipmap/profileplay" />
 
     <TextView
         android:layout_marginTop="10dp"
-        android:visibility="invisible"
         android:textSize="14sp"
         android:id="@+id/textpostTV"
         android:layout_width="wrap_content"
@@ -98,6 +82,15 @@
         android:textColor="#a0a0a0" />
 
 
+    <ImageView
+        android:layout_margin="10dp"
+        android:id="@+id/deleteIV"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@mipmap/trash" />
 
 
 

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_width="match_parent"
+    android:layout_height="150dp">
+
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileIV"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/topbarRL"
+        android:layout_margin="10dp"
+        android:src="@mipmap/mohsin"
+        />
+
+    <TextView
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:text="Mohsin Abbasi"
+        android:id="@+id/usernameTV"
+        android:layout_alignTop="@+id/profileIV"
+        android:layout_toRightOf="@+id/profileIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/dateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usernameTV"
+        android:layout_toEndOf="@+id/profileIV"
+        android:layout_toRightOf="@+id/profileIV"
+        android:text="2 hours ago"
+        android:textSize="8sp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/buttonholderLL"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp">
+
+        <TextView
+            android:id="@+id/likeTV"
+            android:textSize="9sp"
+            android:gravity="center"
+            android:text="Like"
+            android:background="@drawable/flatrectangle_profiletab"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+        <TextView
+            android:id="@+id/commentTV"
+            android:textSize="9sp"
+            android:gravity="center"
+            android:text="Comment"
+            android:background="@drawable/flatrectangle_profiletab"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/stopIV"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/profilestop"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/playIV"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/profileplay" />
+
+    <ImageView
+        android:layout_margin="10dp"
+        android:id="@+id/deleteIV"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@mipmap/trash" />
+
+
+
+
+</RelativeLayout>

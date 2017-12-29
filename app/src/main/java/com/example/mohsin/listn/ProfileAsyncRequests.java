@@ -465,5 +465,6 @@ class ProfileAsyncRequests {
     }
 
 
-
+    public void uploadImagePost() {
+    }
 }
