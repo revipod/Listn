@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
@@ -107,6 +108,7 @@ public class ProfileTab extends Fragment{
     String newPostID;
     String typeofAudio;
     String boldText;
+    String imagePostPath;
     SpannableString str;
 
 
@@ -140,6 +142,7 @@ public class ProfileTab extends Fragment{
     Dialog playAudioMenu;
     Dialog settingsMenu;
     Dialog textPostMenu;
+    Dialog showImagePost;
 
     ProfileAdapter adapter;
 
@@ -709,7 +712,7 @@ public class ProfileTab extends Fragment{
         }
         if (requestCode == CAMERA) {
             Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-            String path = saveImage(thumbnail);
+            final String path = saveImage(thumbnail);
             thumbnail.recycle();
             if(imageType.contains("Profile")) {
                 try {
@@ -720,6 +723,7 @@ public class ProfileTab extends Fragment{
                 }
             }
             else if (imageType.contains("Post")) {
+                imagePostPath = path;
                 final AlertDialog builder;
                 builder = new AlertDialog.Builder(getContext()).create();
                 builder.setTitle("Add Audio");
@@ -727,13 +731,15 @@ public class ProfileTab extends Fragment{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         typeofAudio = "Image";
+                        builder.dismiss();
                         showRecordAudioMenu();
                     }
                 });
                 builder.setButton(Dialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        builder.dismiss();
+                        showImagePost(false);
                     }
                 });
                 builder.setMessage("Do you want to add a audio description to this picture?");
@@ -1022,6 +1028,7 @@ public class ProfileTab extends Fragment{
                 {
                     postmediaPlayer.stop();
                 }
+
                 recordAudioMenu.show();
                 playAudioMenu.dismiss();
                 timerTV.setText("00:00");
@@ -1038,17 +1045,105 @@ public class ProfileTab extends Fragment{
                   headers.put("username",userObject.getString("username"));
                   headers.put("audiofilename",newPostID);
                   Log.d(TAG,"postdate = " + currentDateTimeString);
-                  getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                          WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                  loadingPB.setVisibility(View.VISIBLE);
-                  if(typeofAudio.contains("Post")) requests.uploadAudioPost(audioPostPath,headers.toString());
-                  else if(typeofAudio.contains("Profile"))  requests.setProfileAudio(audioPostPath,userObject.getString("username"));
-                  else if(typeofAudio.contains("Image")) requests.uploadImagePost();
+                  if(typeofAudio.contains("Post")){
+                      getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                              WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                      loadingPB.setVisibility(View.VISIBLE);
+                      requests.uploadAudioPost(audioPostPath,headers.toString());
+                  }
+                  else if(typeofAudio.contains("Profile"))
+                  {
+                      getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                              WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                      loadingPB.setVisibility(View.VISIBLE);
+                      requests.setProfileAudio(audioPostPath,userObject.getString("username"));
+                  }
+                  else if(typeofAudio.contains("Image"))
+                  {
+                      playAudioMenu.dismiss();
+                      recordAudioMenu.dismiss();
+                      recordAudioMenu = null;
+                      playAudioMenu = null;
+                      showImagePost(true);
+                      requests.uploadImagePost();
+                  }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                  e.printStackTrace();
                 }
             }
         });
+
+    }
+
+    private void showImagePost(boolean b) {
+        showImagePost = new Dialog(getContext(), R.style.CustomDialog);
+        showImagePost.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        showImagePost.setCancelable(true);
+        showImagePost.setContentView(R.layout.imagepost_view);
+        showImagePost.show();
+        ImageView closeIV = showImagePost.findViewById(R.id.closeIV);
+        ImageView postIV = showImagePost.findViewById(R.id.saveIV);
+        ImageView imageholderIV = showImagePost.findViewById(R.id.imageholderIV);
+        final ImageView playIV = showImagePost.findViewById(R.id.playIV);
+        final ImageView stopIV = showImagePost.findViewById(R.id.stopIV);
+
+        if(b) {
+            final MediaPlayer imageAudioPlayer = MediaPlayer.create(getContext(), Uri.parse(audioPostPath));
+            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+            metaRetriever.setDataSource(audioPostPath);
+
+
+            imageAudioPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    playIV.setVisibility(View.VISIBLE);
+                    stopIV.setVisibility(View.INVISIBLE);
+                }
+            });
+
+            playIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try{
+                        imageAudioPlayer.start();
+                        playIV.setVisibility(View.INVISIBLE);
+                        stopIV.setVisibility(View.VISIBLE);
+                    }catch (IllegalStateException e) {
+                        postmediaPlayer.pause();
+                    }
+                }
+            });
+
+            stopIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    imageAudioPlayer.pause();
+                    playIV.setVisibility(View.VISIBLE);
+                    stopIV.setVisibility(View.INVISIBLE);
+
+                }
+            });
+
+        }
+        else
+        {
+            playIV.setVisibility(View.INVISIBLE);
+            stopIV.setVisibility(View.INVISIBLE);
+        }
+
+        closeIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showImagePost.dismiss();
+                showImagePost = null;
+            }
+        });
+
+        Bitmap picReviewBitmap = BitmapFactory.decodeFile(imagePostPath);
+        imageholderIV.setImageBitmap(picReviewBitmap);
+
+
+
 
     }
 

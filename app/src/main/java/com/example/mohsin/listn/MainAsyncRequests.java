@@ -34,7 +34,7 @@ public class MainAsyncRequests {
     final Webb webb = Webb.create();
 
     //Server URL to make the request to and from
-    String serverURL = "http://10.155.27.245:3000";
+    String serverURL = "http://192.168.0.103:3000";
     //String serverURL = "https://pptis-revipod.c9users.io";
     private MainActivityInterface listener;
 

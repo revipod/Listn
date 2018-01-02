@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="30dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsmainholderRL"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/roundrectangle_solidcolor">
+
+   <RelativeLayout
+    android:focusable="true"
+    android:id="@+id/topbarRL"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:background="#f2f2f2">
+
+    <ImageView
+        android:id="@+id/saveIV"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/newpostTV"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_weight="1"
+        android:src="@mipmap/check" />
+
+
+    <TextView
+        android:textColor="#919191"
+        android:textStyle="bold"
+        android:selectAllOnFocus="false"
+        android:linksClickable="false"
+        android:autoLink="all"
+        android:id="@+id/newpostTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Review Post" />
+
+    <ImageView
+        android:id="@+id/closeIV"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/newpostTV"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:src="@mipmap/close" />
+
+
+</RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/playIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/topbarRL"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:src="@mipmap/profileplay" />
+
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/stopIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/playIV"
+        android:layout_alignStart="@+id/playIV"
+        android:layout_alignTop="@+id/playIV"
+        android:src="@mipmap/profilestop" />
+
+
+    <ImageView
+        android:src="@mipmap/mohsin"
+        android:id="@+id/imageholderIV"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/playIV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+
+
+</RelativeLayout>
