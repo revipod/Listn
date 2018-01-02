@@ -207,6 +207,8 @@ public class ProfileTab extends Fragment{
                 if(playAudioMenu.isShowing()) {
                     recordAudioMenu.dismiss();
                     playAudioMenu.dismiss();
+                    recordAudioMenu = null;
+                    playAudioMenu = null;
                     dialogBox.createDialog("Changed Audio","You have sucessfully updated your Listn Audio Profile","good");
                 }
                 if(typeofAudio.contains("Profile"))
@@ -308,6 +310,8 @@ public class ProfileTab extends Fragment{
                 adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("audioPath"),post.getString("postDate"), "Audio"));
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
+                recordAudioMenu = null;
+                playAudioMenu = null;
                 adapter.notifyDataSetChanged();
                 numofPosts++;
                 boldText = numofPosts + "\n";
@@ -328,6 +332,12 @@ public class ProfileTab extends Fragment{
                 recyclerView.smoothScrollToPosition(0);
                 adapter.notifyDataSetChanged();
                 textPostMenu.dismiss();
+                textPostMenu = null;
+                View textPostView = textPostMenu.getCurrentFocus();
+                if (textPostView != null) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textPostView.getWindowToken(), 0);
+                }
                 numofPosts++;
                 boldText = numofPosts + "\n";
                 str = new SpannableString(boldText + "Posts" );
@@ -336,11 +346,7 @@ public class ProfileTab extends Fragment{
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
                 dialogBox.createDialog("Posted!","Your new text post was sucessfully uploaded!","good");
-                View textPostView = textPostMenu.getCurrentFocus();
-                if (textPostView != null) {
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(textPostView.getWindowToken(), 0);
-                }
+
             }
 
         };
@@ -532,7 +538,7 @@ public class ProfileTab extends Fragment{
     }
 
     private void showTextPostMenu() {
-        textPostMenu = new Dialog(getContext(),R.style.CustomDialog);
+        textPostMenu = new Dialog(getActivity(),R.style.CustomDialog);
         textPostMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
         textPostMenu.setCancelable(true);
         textPostMenu.setContentView(R.layout.text_post);
@@ -540,7 +546,7 @@ public class ProfileTab extends Fragment{
         textPostMenu.show();
         ImageView closeIV = textPostMenu.findViewById(R.id.closeIV);
         ImageView postIV = textPostMenu.findViewById(R.id.saveIV);
-        RelativeLayout textpostRL = textPostMenu.findViewById(R.id.textpostRL);
+        final RelativeLayout textpostRL = textPostMenu.findViewById(R.id.textpostRL);
         final EditText newPostET = textPostMenu.findViewById(R.id.textpostET);
         postIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -566,7 +572,6 @@ public class ProfileTab extends Fragment{
                 }
             }
         });
-        newPostET.requestFocus();
 
         closeIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -577,6 +582,7 @@ public class ProfileTab extends Fragment{
                     imm.hideSoftInputFromWindow(textPostView.getWindowToken(), 0);
                 }
                 textPostMenu.dismiss();
+                textPostMenu = null;
             }
         });
 
@@ -648,6 +654,7 @@ public class ProfileTab extends Fragment{
             @Override
             public void onClick(View view) {
                 settingsMenu.dismiss();
+                settingsMenu.dismiss();
             }
         });
 
@@ -655,6 +662,7 @@ public class ProfileTab extends Fragment{
             @Override
             public void onClick(View view) {
                 settingsMenu.dismiss();
+                settingsMenu = null;
                 Intent intent = new Intent(getContext(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -832,6 +840,7 @@ public class ProfileTab extends Fragment{
             @Override
             public void onClick(View view) {
                 recordAudioMenu.dismiss();
+                recordAudioMenu = null;
                 timerTV.setText("00:00");
             }
         });
@@ -917,6 +926,7 @@ public class ProfileTab extends Fragment{
 
                 }
                 recordAudioMenu.dismiss();
+                recordAudioMenu = null;
                 timerTV.setText("00:00:00");
 
             }
@@ -966,6 +976,8 @@ public class ProfileTab extends Fragment{
             public void onClick(View view) {
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
+                recordAudioMenu = null;
+                playAudioMenu = null;
                 if(postmediaPlayer.isPlaying())
                 {
                     postmediaPlayer.stop();
@@ -1008,6 +1020,7 @@ public class ProfileTab extends Fragment{
                 }
                 recordAudioMenu.show();
                 playAudioMenu.dismiss();
+                playAudioMenu = null;
                 timerTV.setText("00:00");
 
             }
@@ -1031,6 +1044,7 @@ public class ProfileTab extends Fragment{
 
                 recordAudioMenu.show();
                 playAudioMenu.dismiss();
+                playAudioMenu = null;
                 timerTV.setText("00:00");
             }
         });
