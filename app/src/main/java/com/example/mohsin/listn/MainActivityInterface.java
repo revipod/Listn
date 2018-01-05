@@ -9,19 +9,19 @@ import org.json.JSONObject;
  * Created by Mohsin on 11/22/2017.
  */
 
-public interface MainActivityInterface
+interface MainActivityInterface
 {
-        public void loginUserI(JSONObject result) throws JSONException;
+        void loginUserI(JSONObject result) throws JSONException;
 
-        public void getNameI(Boolean found, final String username);
+        void getNameI(Boolean found, final String username);
 
-        public void setNewUserI(final JSONObject result) throws JSONException;
+        void setNewUserI(final JSONObject result) throws JSONException;
 
-        public void setprofileImagePath(JSONObject profilepicPath) throws JSONException;
+        void setprofileImagePath(JSONObject profilepicPath) throws JSONException;
 
-        public void problemSettingProfilePic();
+        void problemSettingProfilePic();
 
-        public void profileCreated(JSONObject result);
+        void profileCreated(JSONObject result);
 
-        public void setMainActivityProfilePicBitmap(Bitmap result);
+        void setMainActivityProfilePicBitmap(Bitmap result);
 }

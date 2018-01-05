@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
- <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/mainRL"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#FFFFFF">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainRL"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF">
 
         <TextView
             android:id="@+id/usernameTV"
@@ -33,8 +31,6 @@
             android:id="@+id/usernameET"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/loginBTN"
-            android:layout_alignStart="@+id/loginBTN"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/roundrectangle_solid_gray"

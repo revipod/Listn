@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFFFFF"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
@@ -14,7 +13,6 @@
         android:id="@+id/profileIV"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_below="@+id/topbarRL"
         android:layout_margin="10dp"
         android:src="@mipmap/mohsin"
         />

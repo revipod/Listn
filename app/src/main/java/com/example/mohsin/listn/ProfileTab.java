@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
@@ -61,6 +60,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 /**
  * Created by Mohsin on 11/21/2017.
  */
@@ -69,98 +70,92 @@ public class ProfileTab extends Fragment{
 
     private static final String TAG = "PROFILETAB";
     private final int CAMERA = 1;
-    private final String IMAGE_DIRECTORY = "/demonuts_upload_camera";
 
 
-    Animation fadeInAnimation;
+    private Animation fadeInAnimation;
     RippleBackground rippleBackground;
-    RelativeLayout playbtnRL;
-    RelativeLayout voicePostRL;
-    RelativeLayout imagePostRL;
-    RelativeLayout textPostRL;
-    RelativeLayout topholderRL;
-    NestedScrollView mainNSV;
-    RecordAudio audioRecorder;
-    ImageView profileplayIV;
-    ImageView postplayIV;
-    ImageView stopIV;
-    ImageView pauseIV;
-    ImageView profileIV;
-    ImageView settingprofileIV;
-    ImageView settingsIV;
-    TextView listenersTV;
-    TextView listeningTV;
-    TextView postsTV;
-    TextView usernameTV;
-    TextView fullnameTV;
-    TextView timerTV;
-    TextView bioTV;
-    TextView currentTimeTV;
-    EditText fullnameET;
-    EditText usernameET;
-    EditText aboutmeET;
-
-    Button logoutBTN;
+    private RelativeLayout voicePostRL;
+    private RelativeLayout imagePostRL;
+    private RelativeLayout textPostRL;
+    private NestedScrollView mainNSV;
+    private RecordAudio audioRecorder;
+    private ImageView profileplayIV;
+    private ImageView postplayIV;
+    private ImageView stopIV;
+    private ImageView pauseIV;
+    private ImageView profileIV;
+    private ImageView settingsIV;
+    private TextView listenersTV;
+    private TextView listeningTV;
+    private TextView postsTV;
+    private TextView usernameTV;
+    private TextView fullnameTV;
+    private TextView timerTV;
+    private TextView bioTV;
+    private TextView currentTimeTV;
 
 
-    String profileAudioPath;
-    String audioPostPath;
-    String newPostID;
-    String typeofAudio;
-    String boldText;
-    String imagePostPath;
-    SpannableString str;
+
+    private String profileAudioPath;
+    private String audioPostPath;
+    private String newPostID;
+    private String typeofAudio;
+    private String boldText;
+    private String imagePostPath;
+    private SpannableString str;
 
 
-    SeekBar seekBar;
+    private SeekBar seekBar;
 
-    boolean isPlaying;
+    private long MillisecondTime;
+    private long StartTime;
+    private long TimeBuff;
+    private long UpdateTime = 0L ;
 
-    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
+    private int Seconds;
+    private int Minutes;
+    private int MilliSeconds ;
 
-    int Seconds, Minutes, MilliSeconds ;
+    private int numofPosts;
 
-    int numofPosts;
-
-    double durationseconds;
+    private double durationseconds;
 
 
-    JSONObject userObject;
-    JSONObject postObject;
+    private JSONObject userObject;
+    private JSONObject postObject;
 
-    Bitmap profilePic;
+    private Bitmap profilePic;
 
-    ProfileTabInterface profileTabInterface;
-    ProfileAsyncRequests requests;
-    MediaPlayer postmediaPlayer;
-    MediaPlayer profilemediaPlayer;
+    private ProfileAsyncRequests requests;
+    private MediaPlayer postmediaPlayer;
+    private MediaPlayer profilemediaPlayer;
 
-    Handler handler;
+    private Handler handler;
 
-    DialogBox dialogBox;
-    Dialog recordAudioMenu;
-    Dialog playAudioMenu;
-    Dialog settingsMenu;
-    Dialog textPostMenu;
-    Dialog showImagePost;
+    private DialogBox dialogBox;
+    private Dialog recordAudioMenu;
+    private Dialog playAudioMenu;
+    private Dialog settingsMenu;
+    private Dialog textPostMenu;
+    private Dialog showImagePost;
 
-    ProfileAdapter adapter;
+    private ProfileAdapter adapter;
 
-    ProgressBar loadingPB;
+    private ProgressBar loadingPB;
 
-    RecyclerView recyclerView;
-    String imageType;
+    private RecyclerView recyclerView;
+    private String imageType;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.profile_tab, container, false);
-        playbtnRL = rootView.findViewById(R.id.profileRL);
+        RelativeLayout playbtnRL = rootView.findViewById(R.id.profileRL);
         voicePostRL = rootView.findViewById(R.id.micpostRL);
         imagePostRL = rootView.findViewById(R.id.imagepostRL);
         textPostRL = rootView.findViewById(R.id.textpostRL);
-        topholderRL = rootView.findViewById(R.id.topholderRL);
+        RelativeLayout topholderRL = rootView.findViewById(R.id.topholderRL);
         mainNSV = rootView.findViewById(R.id.mainNSV);
         profileplayIV =  rootView.findViewById(R.id.playIV);
         stopIV =  rootView.findViewById(R.id.stopIV);
@@ -173,7 +168,7 @@ public class ProfileTab extends Fragment{
         bioTV = rootView.findViewById(R.id.bioTV);
         postsTV = rootView.findViewById(R.id.postsTV);
         dialogBox = new DialogBox(getContext());
-        isPlaying = false;
+        boolean isPlaying = false;
         loadingPB = (ProgressBar) rootView.findViewById(R.id.progressbar);
         loadingPB.setVisibility(View.VISIBLE);
         userObject = ((TabActivity) getActivity()).userObject;
@@ -182,7 +177,7 @@ public class ProfileTab extends Fragment{
         playAudioMenu = new Dialog(getContext(), R.style.CustomDialog);
         settingsMenu = new Dialog(getContext(), R.style.CustomDialog);
         recyclerView = rootView.findViewById(R.id.profileRV);
-        profileTabInterface = new ProfileTabInterface() {
+        ProfileTabInterface profileTabInterface = new ProfileTabInterface() {
             @Override
             public void setProfileTabProfilePic(Bitmap result) {
                 adapter.profilePic = result;
@@ -191,8 +186,7 @@ public class ProfileTab extends Fragment{
             }
 
             @Override
-            public void gotProfileAudio(JSONObject user)
-            {
+            public void gotProfileAudio(JSONObject user) {
                 userObject = user;
                 profileAudioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/profileaudio.3gp";
                 profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
@@ -204,15 +198,14 @@ public class ProfileTab extends Fragment{
                         stopIV.setVisibility(View.INVISIBLE);
                     }
                 });
-                if(playAudioMenu.isShowing()) {
+                if (playAudioMenu.isShowing()) {
                     recordAudioMenu.dismiss();
                     playAudioMenu.dismiss();
                     recordAudioMenu = null;
                     playAudioMenu = null;
-                    dialogBox.createDialog("Changed Audio","You have sucessfully updated your Listn Audio Profile","good");
+                    dialogBox.createDialog("Changed Audio", "You have sucessfully updated your Listn Audio Profile", "good");
                 }
-                if(typeofAudio.contains("Profile"))
-                {
+                if (typeofAudio.contains("Profile")) {
                     getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     loadingPB.setVisibility(View.GONE);
                 }
@@ -223,17 +216,13 @@ public class ProfileTab extends Fragment{
             public void loadListView(ArrayList<String> dataFileList) throws JSONException {
 
                 JSONArray postType = postObject.getJSONArray("postType");
-                for(int i = 0; i < postType.length(); i++)
-                {
-                    if(postType.getString(i).contains("Audio"))
-                    {
-                        Log.d(TAG,"adding audio " + dataFileList.get(i));
+                for (int i = 0; i < postType.length(); i++) {
+                    if (postType.getString(i).contains("Audio")) {
+                        Log.d(TAG, "adding audio " + dataFileList.get(i));
                         adapter.add(new ProfileDataProvider(userObject.getString("username"), dataFileList.get(i), (String) postObject.getJSONArray("postDate").getString(i), "Audio"));
-                    }
-                    else if (postType.getString(i).contains("Text"))
-                    {
-                        Log.d(TAG,"adding text " + dataFileList.get(i));
-                        adapter.add(new ProfileDataProvider(userObject.getString("username"),dataFileList.get(i),postObject.getJSONArray("postDate").getString(i),"Text"));
+                    } else if (postType.getString(i).contains("Text")) {
+                        Log.d(TAG, "adding text " + dataFileList.get(i));
+                        adapter.add(new ProfileDataProvider(userObject.getString("username"), dataFileList.get(i), postObject.getJSONArray("postDate").getString(i), "Text"));
                     }
                 }
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
@@ -246,7 +235,7 @@ public class ProfileTab extends Fragment{
             public void setprofileImagePath(JSONObject user) {
                 userObject = user;
                 try {
-                    requests.getImage(user.getString("profilepic"),"Settings");
+                    requests.getImage(user.getString("profilepic"), "Settings");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -261,7 +250,6 @@ public class ProfileTab extends Fragment{
             public void setSettingProfilePic(Bitmap result) {
                 profilePic = result;
                 profileIV.setImageBitmap(result);
-                settingprofileIV.setImageBitmap(profilePic);
                 adapter.profilePic = result;
                 adapter.notifyDataSetChanged();
             }
@@ -270,16 +258,14 @@ public class ProfileTab extends Fragment{
             public void changeSettings(JSONObject result) throws JSONException {
                 JSONObject user = result.getJSONObject("user");
                 userObject = user;
-                if(result.has("existed")) {
+                if (result.has("existed")) {
                     if (result.getBoolean("existed")) {
                         dialogBox.createDialog("Already Exists", "Sorry but a person is already using that username", "bad");
                     } else
-                    dialogBox.createDialog("New username", "Your new username is " + user.getString("username"), "good");
-                    usernameET.setText(user.getString("username"));
+                        dialogBox.createDialog("New username", "Your new username is " + user.getString("username"), "good");
+
                     usernameTV.setText(user.getString("username"));
                 }
-                fullnameET.setText(user.getString("fullname"));
-                aboutmeET.setText(user.getString("bio"));
                 fullnameTV.setText(user.getString("fullname"));
                 bioTV.setText(user.getString("bio"));
                 View settingsView = settingsMenu.getCurrentFocus();
@@ -287,6 +273,8 @@ public class ProfileTab extends Fragment{
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(settingsView.getWindowToken(), 0);
                 }
+                settingsMenu.dismiss();
+                settingsMenu = null;
             }
 
             @Override
@@ -306,8 +294,8 @@ public class ProfileTab extends Fragment{
 
             @Override
             public void gotPostAudio(JSONObject post) throws JSONException {
-                Log.d(TAG,"audio being added to listview path is = " + post.getString("audioPath"));
-                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("audioPath"),post.getString("postDate"), "Audio"));
+                Log.d(TAG, "audio being added to listview path is = " + post.getString("audioPath"));
+                adapter.add(new ProfileDataProvider(post.getString("username"), post.getString("audioPath"), post.getString("postDate"), "Audio"));
                 recordAudioMenu.dismiss();
                 playAudioMenu.dismiss();
                 recordAudioMenu = null;
@@ -315,20 +303,20 @@ public class ProfileTab extends Fragment{
                 adapter.notifyDataSetChanged();
                 numofPosts++;
                 boldText = numofPosts + "\n";
-                str = new SpannableString(boldText + "Posts" );
+                str = new SpannableString(boldText + "Posts");
                 str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 postsTV.setText(str);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-                dialogBox.createDialog("Posted!","Your new voice post was sucessfully uploaded!","good");
+                dialogBox.createDialog("Posted!", "Your new voice post was sucessfully uploaded!", "good");
 
 
             }
 
             @Override
             public void gotTextPost(JSONObject post) throws JSONException {
-                Log.d(TAG,"text being added to listview path is = " + post.getString("postText"));
-                adapter.add(new ProfileDataProvider(post.getString("username"),post.getString("postText"),post.getString("postDate"),"Text"));
+                Log.d(TAG, "text being added to listview path is = " + post.getString("postText"));
+                adapter.add(new ProfileDataProvider(post.getString("username"), post.getString("postText"), post.getString("postDate"), "Text"));
                 recyclerView.smoothScrollToPosition(0);
                 adapter.notifyDataSetChanged();
                 textPostMenu.dismiss();
@@ -340,12 +328,12 @@ public class ProfileTab extends Fragment{
                 }
                 numofPosts++;
                 boldText = numofPosts + "\n";
-                str = new SpannableString(boldText + "Posts" );
+                str = new SpannableString(boldText + "Posts");
                 str.setSpan(new StyleSpan(Typeface.BOLD), 0, boldText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 postsTV.setText(str);
                 getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-                dialogBox.createDialog("Posted!","Your new text post was sucessfully uploaded!","good");
+                dialogBox.createDialog("Posted!", "Your new text post was sucessfully uploaded!", "good");
 
             }
 
@@ -604,14 +592,14 @@ public class ProfileTab extends Fragment{
         settingsMenu.show();
         final ImageView closeIV = settingsMenu.findViewById(R.id.backIV);
         final ImageView changeIV = settingsMenu.findViewById(R.id.saveIV);
-        ImageView changeProfileListnLV = settingsMenu.findViewById(R.id.changeprofileaudioIV);
+        final ImageView changeProfileListnLV = settingsMenu.findViewById(R.id.changeprofileaudioIV);
         final Button changePicBTN = settingsMenu.findViewById(R.id.changepicBTN);
         final RelativeLayout settingsRootView = settingsMenu.findViewById(R.id.settingsmainholderRL);
-        logoutBTN = settingsMenu.findViewById(R.id.logoutBTN);
-        fullnameET = settingsMenu.findViewById(R.id.fullnameET);
-        usernameET = settingsMenu.findViewById(R.id.usernameET);
-        aboutmeET = settingsMenu.findViewById(R.id.aboutmeET);
-        settingprofileIV = settingsMenu.findViewById(R.id.settingprofileIV);
+        final Button logoutBTN = settingsMenu.findViewById(R.id.logoutBTN);
+        final EditText fullnameET = settingsMenu.findViewById(R.id.fullnameET);
+        final EditText usernameET = settingsMenu.findViewById(R.id.usernameET);
+        final EditText aboutmeET = settingsMenu.findViewById(R.id.aboutmeET);
+        final ImageView settingprofileIV = settingsMenu.findViewById(R.id.settingprofileIV);
 
         settingprofileIV.setImageBitmap(profilePic);
 
@@ -654,7 +642,7 @@ public class ProfileTab extends Fragment{
             @Override
             public void onClick(View view) {
                 settingsMenu.dismiss();
-                settingsMenu.dismiss();
+                settingsMenu = null;
             }
         });
 
@@ -715,7 +703,7 @@ public class ProfileTab extends Fragment{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == getActivity().RESULT_CANCELED) {
+        if (resultCode == RESULT_CANCELED) {
             return;
         }
         if (requestCode == CAMERA) {
@@ -758,9 +746,10 @@ public class ProfileTab extends Fragment{
         }
     }
 
-    public String saveImage(Bitmap myBitmap) {
+    private String saveImage(Bitmap myBitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        String IMAGE_DIRECTORY = "/demonuts_upload_camera";
         File wallpaperDirectory = new File(
                 Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
         // have the object build the directory structure, if needed.
@@ -789,7 +778,7 @@ public class ProfileTab extends Fragment{
     }
 
 
-    public void gotProfileAudio() {
+    private void gotProfileAudio() {
         profilemediaPlayer = MediaPlayer.create(getContext(), Uri.parse(profileAudioPath));
         profilemediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -804,7 +793,7 @@ public class ProfileTab extends Fragment{
 
 
     @SuppressLint("ClickableViewAccessibility")
-    public void showRecordAudioMenu()
+    private void showRecordAudioMenu()
     {
 
         recordAudioMenu = new Dialog(getContext(), R.style.CustomDialog);
@@ -848,19 +837,15 @@ public class ProfileTab extends Fragment{
         recordaudioIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
                     newPostID = generateID();
                     audioPostPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + newPostID + ".3gp";
                     audioRecorder = new RecordAudio(audioPostPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 try {
                     audioRecorder.startRecord();
-                    timerTV.setText("00:00");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                timerTV.setText("00:00");
                 StartTime = SystemClock.uptimeMillis();
                 handler.postDelayed(runnable, 0);
                 recordingcircle.setAnimation(fadeInAnimation);
@@ -933,7 +918,7 @@ public class ProfileTab extends Fragment{
         });
     }
 
-    public void playAudioMenu()
+    private void playAudioMenu()
     {
         playAudioMenu = new Dialog(getContext(), R.style.CustomDialog);
         playAudioMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1167,7 +1152,7 @@ public class ProfileTab extends Fragment{
         currentTimeTV.setText(String.valueOf((double)(postmediaPlayer.getCurrentPosition()) /1000));
     }
 
-    public void startPlayProgressUpdater() {
+    private void startPlayProgressUpdater() {
 
         seekBar.setProgress(postmediaPlayer.getCurrentPosition());
         if (postmediaPlayer.isPlaying()) {
@@ -1185,7 +1170,7 @@ public class ProfileTab extends Fragment{
 
     }
 
-    public Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
 
         public void run() {
 
@@ -1211,7 +1196,7 @@ public class ProfileTab extends Fragment{
 
 
 
-        public String generateID()
+        private String generateID()
         {
             String daysArray[] = {
                     "Sunday",
@@ -1231,8 +1216,7 @@ public class ProfileTab extends Fragment{
             String milliseconds = String.valueOf(time);
             // Log.d(TAG, "day = " + day + " day of month = " + dayOfMonth + " Month = " + Month + " year = " + year + " milliseconds = " + time);
             String currentDay = daysArray[day - 1];
-            String generatedID = currentDay.substring(0, 3) + Month + dayOfMonth + year + milliseconds.substring(milliseconds.length() - 5, milliseconds.length());
-            return generatedID;
+            return currentDay.substring(0, 3) + Month + dayOfMonth + year + milliseconds.substring(milliseconds.length() - 5, milliseconds.length());
         }
 
 

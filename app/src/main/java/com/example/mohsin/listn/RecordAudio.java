@@ -2,7 +2,6 @@ package com.example.mohsin.listn;
 
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
 
 import java.io.IOException;
 
@@ -10,20 +9,19 @@ import java.io.IOException;
  * Created by Mohsin on 11/26/2017.
  */
 
-public class RecordAudio {
+class RecordAudio {
 
     private boolean isRecording = false;
     private static String audioFilePath;
 
     private static MediaRecorder mediaRecorder;
-    private static MediaPlayer mediaPlayer;
 
 
-     public RecordAudio(String path) throws IOException {
+    public RecordAudio(String path) {
          audioFilePath = path;
      }
 
-     public void readyRecording()
+     private void readyRecording()
      {
          mediaRecorder = new MediaRecorder();
          mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -48,7 +46,7 @@ public class RecordAudio {
      }
 
      public void playAudio() throws IOException {
-         mediaPlayer = new MediaPlayer();
+         MediaPlayer mediaPlayer = new MediaPlayer();
          mediaPlayer.setDataSource(audioFilePath);
          mediaPlayer.prepare();
          mediaPlayer.start();

@@ -20,7 +20,6 @@ import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -50,55 +49,57 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
-    Button loginBTN;
-    Button registerBTN;
-    EditText usernameET;
-    EditText passwordET;
+    private Button loginBTN;
+    private Button registerBTN;
+    private EditText usernameET;
+    private EditText passwordET;
 
-    TextView timerTV;
-    TextView currentTimeTV;
-    TextView additionalinfoTV;
+    private TextView timerTV;
+    private TextView currentTimeTV;
+    private TextView additionalinfoTV;
 
-    MainAsyncRequests requests;
-    DialogBox dialogBox;
+    private MainAsyncRequests requests;
+    private DialogBox dialogBox;
 
-    SeekBar seekBar;
+    private SeekBar seekBar;
 
-    ProgressBar loadingPB;
+    private ProgressBar loadingPB;
 
-    View centerView;
-    Dialog newUserDialog;
-    Dialog additionalregistermenuDialog;
-    MainActivityInterface mainActivityInterface;
+    private Dialog newUserDialog;
+    private Dialog additionalregistermenuDialog;
 
-    Dialog firsttimeCameraMenu;
-    Dialog firsttimeAudioMenu;
-    Dialog recordAudioMenu;
-    Dialog playAudioMenu;
+    private Dialog firsttimeCameraMenu;
+    private Dialog firsttimeAudioMenu;
+    private Dialog recordAudioMenu;
+    private Dialog playAudioMenu;
 
-    Handler handler;
+    private Handler handler;
 
-    RecordAudio audioRecorder;
-    MediaPlayer mediaPlayer;
+    private RecordAudio audioRecorder;
+    private MediaPlayer mediaPlayer;
 
-    Bitmap profilePic;
+    private Bitmap profilePic;
 
-    static final int INITIAL_REQUEST = 1337;
-    static final int WRITE_EXTERNAL_REQUEST = INITIAL_REQUEST + 3;
+    private static final int INITIAL_REQUEST = 1337;
+    private static final int WRITE_EXTERNAL_REQUEST = INITIAL_REQUEST + 3;
     static final int ACCESS_COARSE_LOCATION = INITIAL_REQUEST + 4;
     static final int ACCESS_WIFI = INITIAL_REQUEST + 5;
-    static final int ACCESS_INTERNET = INITIAL_REQUEST + 6;
-    static final int ACCESS_MICROPHONE = INITIAL_REQUEST + 7;
+    private static final int ACCESS_INTERNET = INITIAL_REQUEST + 6;
+    private static final int ACCESS_MICROPHONE = INITIAL_REQUEST + 7;
     private final int CAMERA = 1;
-    private final String IMAGE_DIRECTORY = "/demonuts_upload_camera";
 
-    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
+    private long MillisecondTime;
+    private long StartTime;
+    private long TimeBuff;
+    private long UpdateTime = 0L ;
 
-    int Seconds, Minutes, MilliSeconds ;
+    private int Seconds;
+    private int Minutes;
+    private int MilliSeconds ;
 
-    double durationseconds;
+    private double durationseconds;
 
-    static final String[] WRITE_EXTERNAL_PREMS = {
+    private static final String[] WRITE_EXTERNAL_PREMS = {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
@@ -106,30 +107,32 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_WIFI_STATE
     };
 
-    static final String[] ACCESS_INTERNET_PREMS = {
+    private static final String[] ACCESS_INTERNET_PREMS = {
             Manifest.permission.INTERNET
     };
 
-    static final String[] ACCESS_MICROPHONE_PREMS = {
+    private static final String[] ACCESS_MICROPHONE_PREMS = {
             Manifest.permission.RECORD_AUDIO
     };
 
-    String profileAudioPath = "blank";
-    String profilePicPath = "blank";
-    String usernameregexp = "^[a-zA-Z0-9._-]{5,20}$";
-    String passwordregex = "^[a-zA-Z0-9._!@#$%^&+=-]{5,20}$";
-    String fullnameregexp = "^[\\p{L} .'-]{2,25}+$";
-    String email,password,fullname;
+    private String profileAudioPath = "blank";
+    private String profilePicPath = "blank";
+    private final String usernameregexp = "^[a-zA-Z0-9._-]{5,20}$";
+    private final String passwordregex = "^[a-zA-Z0-9._!@#$%^&+=-]{5,20}$";
+    private final String fullnameregexp = "^[\\p{L} .'-]{2,25}+$";
+    private String email;
+    private String password;
+    private String fullname;
 
-    JSONObject userData;
-    JSONObject postData;
+    private JSONObject userData;
+    private JSONObject postData;
 
-    ImageView playIV;
-    ImageView pauseIV;
+    private ImageView playIV;
+    private ImageView pauseIV;
 
-    RelativeLayout rootView;
+    private RelativeLayout rootView;
 
-    public Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
 
         public void run() {
 
@@ -162,35 +165,34 @@ public class MainActivity extends AppCompatActivity {
         registerBTN = (Button) findViewById(R.id.registerBTN);
         usernameET = (EditText) findViewById(R.id.usernameET);
         passwordET = (EditText) findViewById(R.id.passwordET);
-        centerView = (View) findViewById(R.id.centerdot);
+        View centerView = (View) findViewById(R.id.centerdot);
         rootView = (RelativeLayout) findViewById(R.id.rootView);
         loadingPB = (ProgressBar) findViewById(R.id.progressbar);
-        mainActivityInterface = new MainActivityInterface() {
+        MainActivityInterface mainActivityInterface = new MainActivityInterface() {
             @Override
             public void loginUserI(JSONObject result) throws JSONException {
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                 loadingPB.setVisibility(View.GONE);
-                if(result.getBoolean("loggedin")){
+                if (result.getBoolean("loggedin")) {
                     userData = result.getJSONObject("user");
                     postData = result.getJSONObject("posts");
                     Intent intent = new Intent(getApplicationContext(), TabActivity.class);
-                    intent.putExtra("User",userData.toString());
-                    intent.putExtra("postData",postData.toString());
-                    if(postData!=null) intent.putExtra("postData",postData.toString());
-                    intent.putExtra("loginorRegister","login");
+                    intent.putExtra("User", userData.toString());
+                    intent.putExtra("postData", postData.toString());
+                    if (postData != null) intent.putExtra("postData", postData.toString());
+                    intent.putExtra("loginorRegister", "login");
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
-                }
-                else{
-                    dialogBox.createDialog("Not found","Either the username of password you inserted is in correct. Please try again.","bad");
+                } else {
+                    dialogBox.createDialog("Not found", "Either the username of password you inserted is in correct. Please try again.", "bad");
                 }
 
             }
 
             @Override
             public void getNameI(Boolean found, String username) {
-                getName(found,username);
+                getName(found, username);
             }
 
             @Override
@@ -203,19 +205,16 @@ public class MainActivity extends AppCompatActivity {
 
                 userData = user;
                 profilePicPath = user.getString("profilepic");
-                if(profilePicPath.contains("NoPicture"))
-                {
+                if (profilePicPath.contains("NoPicture")) {
                     getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                     loadingPB.setVisibility(View.GONE);
                     profilePic = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                             R.mipmap.noprofilepic);
-                }
-                else
-                {
+                } else {
                     requests.getImage(profilePicPath);
                 }
-                    firsttimeAudioMenu.show();
-                    firsttimeCameraMenu.dismiss();
+                firsttimeAudioMenu.show();
+                firsttimeCameraMenu.dismiss();
             }
 
             @Override
@@ -233,8 +232,8 @@ public class MainActivity extends AppCompatActivity {
                 userData = result;
                 Intent intent = new Intent(getApplicationContext(), TabActivity.class);
                 intent.putExtra("User", userData.toString());
-                intent.putExtra("postData",postData.toString());
-                intent.putExtra("loginorRegister","login");
+                intent.putExtra("postData", postData.toString());
+                intent.putExtra("loginorRegister", "login");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
@@ -311,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void setNewUser(final JSONObject result) throws JSONException {
+    private void setNewUser(final JSONObject result) throws JSONException {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loadingPB.setVisibility(View.GONE);
         if (result.getBoolean("found"))
@@ -375,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getName(Boolean found, final String username){
+    private void getName(Boolean found, final String username){
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         loadingPB.setVisibility(View.GONE);
         if(found)
@@ -542,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == this.RESULT_CANCELED) {
+        if (resultCode == RESULT_CANCELED) {
             return;
         }
         if (requestCode == CAMERA) {
@@ -561,9 +560,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String saveImage(Bitmap myBitmap) {
+    private String saveImage(Bitmap myBitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         myBitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        String IMAGE_DIRECTORY = "/demonuts_upload_camera";
         File wallpaperDirectory = new File(
                 Environment.getExternalStorageDirectory() + IMAGE_DIRECTORY);
         // have the object build the directory structure, if needed.
@@ -628,7 +628,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @SuppressLint("ClickableViewAccessibility")
-    public void showRecordAudioMenu()
+    private void showRecordAudioMenu()
     {
 
         recordAudioMenu = new Dialog(this, R.style.CustomDialog);
@@ -674,17 +674,13 @@ public class MainActivity extends AppCompatActivity {
         recordaudioIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
                     audioRecorder = new RecordAudio(profileAudioPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 try {
                     audioRecorder.startRecord();
-                    timerTV.setText("00:00");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                timerTV.setText("00:00");
                 StartTime = SystemClock.uptimeMillis();
                 handler.postDelayed(runnable, 0);
                 recordingcircle.setAnimation(fadeInAnimation);
@@ -751,7 +747,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void playAudioMenu()
+    private void playAudioMenu()
     {
         playAudioMenu = new Dialog(this, R.style.CustomDialog);
         playAudioMenu.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -878,8 +874,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void startPlayProgressUpdater() {
-        double seconds = (double)(mediaPlayer.getCurrentPosition()) /1000;
+    private void startPlayProgressUpdater() {
 
         seekBar.setProgress(mediaPlayer.getCurrentPosition());
         if (mediaPlayer.isPlaying()) {
@@ -914,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public boolean checkMicPermission() {
+    private boolean checkMicPermission() {
         Log.d(TAG,"in check mic permission");
         if (Build.VERSION.SDK_INT >= 23)
         {
@@ -939,7 +934,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean checkCameraPermission() {
+    private boolean checkCameraPermission() {
         if (Build.VERSION.SDK_INT >= 23)
         {
             if (getApplicationContext().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==

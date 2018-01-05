@@ -58,7 +58,6 @@
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="12dp"
                         android:layout_marginRight="12dp"
-                        android:layout_weight="1"
                         android:src="@mipmap/settings" />
 
                     <ImageView
@@ -204,6 +203,7 @@
             </RelativeLayout>
 
             <LinearLayout
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:layout_below="@+id/profileRL"
                 android:layout_marginLeft="3dp"

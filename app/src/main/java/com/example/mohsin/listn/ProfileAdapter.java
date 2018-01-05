@@ -1,9 +1,5 @@
 package com.example.mohsin.listn;
 
-/**
- * Created by mabbasi on 12/20/2017.
- */
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -18,25 +14,25 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     private static final String TAG = "ProfileADAPTER";
     Bitmap profilePic;
-    ArrayList<String> dataFileList;
-    ArrayList<ProfileDataProvider> dataProviderList;
-    Context CTX;
-    MediaPlayer mp;
-    int currPlaying;
+    private final ArrayList<String> dataFileList;
+    private final ArrayList<ProfileDataProvider> dataProviderList;
+    private final Context CTX;
+    private MediaPlayer mp;
+    private int currPlaying;
 
 
 
     public class audioViewHolder extends RecyclerView.ViewHolder {
-        ImageView playIV;
-        ImageView stopIV;
-        ImageView profileIV;
-        TextView usernameTV;
-        TextView dateTV;
+        final ImageView playIV;
+        final ImageView stopIV;
+        final ImageView profileIV;
+        final TextView usernameTV;
+        final TextView dateTV;
 
         public audioViewHolder (View view) {
             super(view);
@@ -50,10 +46,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public class textViewHolder  extends RecyclerView.ViewHolder {
 
-        ImageView profileIV;
-        TextView usernameTV;
-        TextView dateTV;
-        TextView textTV;
+        final ImageView profileIV;
+        final TextView usernameTV;
+        final TextView dateTV;
+        final TextView textTV;
 
         public textViewHolder(View view) {
             super(view);
@@ -66,8 +62,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public ProfileAdapter(Bitmap profilePic, Context CTX) {
         this.profilePic = profilePic;
-        dataFileList = new ArrayList<String>();
-        dataProviderList = new ArrayList<ProfileDataProvider>();
+        dataFileList = new ArrayList<>();
+        dataProviderList = new ArrayList<>();
         this.CTX = CTX;
         currPlaying = -1;
     }

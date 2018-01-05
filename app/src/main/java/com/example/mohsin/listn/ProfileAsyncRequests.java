@@ -37,10 +37,10 @@ class ProfileAsyncRequests {
     private static final String TAG = "TAB ProfileRequests";
 
     //Webb is Lightweight Java HTTP-Client for calling JSON REST-Service
-    final Webb webb = Webb.create();
+    private final Webb webb = Webb.create();
 
     //Server URL to make the request to and from
-    String serverURL = "http://192.168.0.103:3000";
+    private String serverURL = "http://10.155.27.245:3000";
     private ProfileTabInterface profileTabInterface;
 
 
@@ -57,13 +57,12 @@ class ProfileAsyncRequests {
             @Override
             protected JSONObject doInBackground(JSONObject... params) {
                 try {
-                    JSONObject response = webb
+                    return webb
                             .post("/test")
                             .body(test)
                             .connectTimeout(10 * 1000)
                             .asJsonObject()
                             .getBody();
-                    return response;
                 } catch (Exception e) {
                     Log.d(TAG, "EXCEPTION IS = " + e.toString());
                     e.printStackTrace();
@@ -133,7 +132,7 @@ class ProfileAsyncRequests {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public Bitmap getImage(final String imageURL, final String type) {
+    public void getImage(final String imageURL, final String type) {
         Log.d(TAG, "imgurl = " + imageURL);
         new AsyncTask<Object, Object, Bitmap>() {
             @Override
@@ -165,7 +164,6 @@ class ProfileAsyncRequests {
                     profileTabInterface.setSettingProfilePic(result);
             }
         }.execute();
-        return null;
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -302,7 +300,7 @@ class ProfileAsyncRequests {
                     output.flush();
                     output.close();
                     input.close();
-                } catch (Exception e) {}
+                } catch (Exception e) {e.printStackTrace();}
                 return filename;
             }
 
@@ -357,6 +355,7 @@ class ProfileAsyncRequests {
                                 input.close();
 
                             } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                         else dataFileList.add(postSource.getString(i));
@@ -387,13 +386,12 @@ class ProfileAsyncRequests {
                 @Override
                 protected JSONObject doInBackground(JSONObject... params) {
                     try {
-                        JSONObject response = webb
+                        return webb
                                 .post("/changeProfileSettings")
                                 .body(data)
                                 .connectTimeout(10 * 1000)
                                 .asJsonObject()
                                 .getBody();
-                        return response;
                     } catch (Exception e) {
                         Log.d(TAG,"EXCEPTION IS = " + e.toString());
                         e.printStackTrace();

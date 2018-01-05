@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * Created by mabbasi on 11/30/2017.
  */
 
-public interface ProfileTabInterface
+interface ProfileTabInterface
 {
     void setProfileTabProfilePic(Bitmap result);
     void gotProfileAudio(JSONObject user);

@@ -1,20 +1,14 @@
 package com.example.mohsin.listn;
 
-/**
- * Created by mabbasi on 11/30/2017.
- */
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-
-import org.json.JSONObject;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 
     public SectionsPagerAdapter(FragmentManager fm) {
@@ -25,14 +19,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                FeedTab feedTab = new FeedTab();
-                return feedTab;
+                return new FeedTab();
             case 1:
-                NotificationTab notificationTab = new NotificationTab();
-                return notificationTab;
+                return new NotificationTab();
             case 2:
-                ProfileTab profileTab = new ProfileTab();
-                return profileTab;
+                return new ProfileTab();
             default:
                 return  null;
         }

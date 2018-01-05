@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,28 +23,10 @@ import org.json.JSONObject;
 public class TabActivity extends AppCompatActivity{
 
     private static final String TAG = "TABACTIVITY";
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
-
-    DialogBox dialogBox;
-
-    TabLayout tabLayout;
-    ProfileAsyncRequests requests;
+    private TabLayout tabLayout;
     JSONObject userObject;
     JSONObject postObject;
-    String username;
 
 
     @Override
@@ -58,7 +39,7 @@ public class TabActivity extends AppCompatActivity{
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.BLUE);
         }
-        dialogBox = new DialogBox(this);
+        DialogBox dialogBox = new DialogBox(this);
 
         Intent intent = getIntent();
 
@@ -66,7 +47,7 @@ public class TabActivity extends AppCompatActivity{
         try {
             postObject = new JSONObject(intent.getStringExtra("postData"));
             userObject = new JSONObject(intent.getStringExtra("User"));
-            username = userObject.getString("username");
+            String username = userObject.getString("username");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -74,9 +55,20 @@ public class TabActivity extends AppCompatActivity{
 
             // Create the adapter that will return a fragment for each of the three
             // primary sections of the activity.
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            /*
+      The {@link android.support.v4.view.PagerAdapter} that will provide
+      fragments for each of the sections. We use a
+      {@link FragmentPagerAdapter} derivative, which will keep every
+      loaded fragment in memory. If this becomes too memory intensive, it
+      may be best to switch to a
+      {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
             // Set up the ViewPager with the sections adapter.
-            mViewPager = (ViewPager) findViewById(R.id.container);
+            /*
+      The {@link ViewPager} that will host the section contents.
+     */
+        ViewPager mViewPager = findViewById(R.id.container);
             mViewPager.setAdapter(mSectionsPagerAdapter);
             tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
@@ -129,10 +121,10 @@ public class TabActivity extends AppCompatActivity{
 
     }
 
-    public void loadProfile()
+    private void loadProfile()
     {
         Log.d(TAG,"logged in " + "user = " + userObject.toString() );
-        requests = null;
+        ProfileAsyncRequests requests = null;
         tabLayout.getTabAt(2).select();
     }
 

@@ -10,12 +10,12 @@ import android.util.Log;
 class ProfileDataProvider {
 
     private static final String TAG = "ProfileDataProvider";
-    String username;
-    String date;
+    final String username;
+    final String date;
     String listns;
     String audioPath;
     String postText;
-    String type;
+    final String type;
 
     ProfileDataProvider(String username, String data, String date, String type)
     {

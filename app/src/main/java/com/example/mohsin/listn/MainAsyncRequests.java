@@ -1,9 +1,6 @@
 package com.example.mohsin.listn;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -25,22 +22,21 @@ import java.util.concurrent.ExecutionException;
  * Created by Mohsin on 11/19/2017.
  */
 
-public class MainAsyncRequests {
+class MainAsyncRequests {
 
     private static final String TAG = "MAIN MainAsyncRequests";
-    boolean foundUsername;
+    private boolean foundUsername;
 
     //Webb is Lightweight Java HTTP-Client for calling JSON REST-Service
-    final Webb webb = Webb.create();
+    private final Webb webb = Webb.create();
 
-    //Server URL to make the request to and from
-    String serverURL = "http://192.168.0.103:3000";
     //String serverURL = "https://pptis-revipod.c9users.io";
-    private MainActivityInterface listener;
+    private final MainActivityInterface listener;
 
     public MainAsyncRequests(MainActivityInterface listener)
     {
         this.listener = listener;
+        String serverURL = "http://10.155.27.245:3000";
         webb.setBaseUri(serverURL);
     }
 
@@ -53,13 +49,12 @@ public class MainAsyncRequests {
             @Override
             protected JSONObject doInBackground(JSONObject... params) {
                 try {
-                    JSONObject response = webb
+                    return webb
                             .post("/test")
                             .body(test)
                             .connectTimeout(10 * 1000)
                             .asJsonObject()
                             .getBody();
-                    return response;
                 } catch (Exception e) {
                     Log.d(TAG,"EXCEPTION IS = " + e.toString());
                     e.printStackTrace();
@@ -98,13 +93,12 @@ public class MainAsyncRequests {
             @Override
             protected JSONObject doInBackground(JSONObject... params) {
                 try {
-                    JSONObject response = webb
+                    return webb
                             .post("/login")
                             .body(data)
                             .connectTimeout(10 * 1000)
                             .asJsonObject()
                             .getBody();
-                    return response;
                 } catch (Exception e) {
                     Log.d(TAG,"EXCEPTION IS = " + e.toString());
                     e.printStackTrace();
@@ -148,13 +142,12 @@ public class MainAsyncRequests {
             @Override
             protected JSONObject doInBackground(JSONObject... params) {
                 try {
-                    JSONObject response = webb
+                    return webb
                             .post("/checkUsername")
                             .body(data)
                             .connectTimeout(10 * 1000)
                             .asJsonObject()
                             .getBody();
-                    return response;
                 } catch (Exception e) {
                     Log.d(TAG,"EXCEPTION IS = " + e.toString());
                     e.printStackTrace();
@@ -197,13 +190,12 @@ public class MainAsyncRequests {
             @Override
             protected JSONObject doInBackground(JSONObject... params) {
                 try {
-                    JSONObject response = webb
+                    return webb
                             .post("/checkEmail")
                             .body(data)
                             .connectTimeout(10 * 1000)
                             .asJsonObject()
                             .getBody();
-                    return response;
                 } catch (Exception e) {
                     Log.d(TAG,"EXCEPTION IS = " + e.toString());
                     e.printStackTrace();
@@ -239,7 +231,7 @@ public class MainAsyncRequests {
 
 
     @SuppressLint("StaticFieldLeak")
-    public void changeProfilePic(final String imagePath, final String username) throws Exception {
+    public void changeProfilePic(final String imagePath, final String username) {
         Log.d(TAG, "About to upload Image");
         new AsyncTask<JSONObject, Void, JSONObject>() {
 
@@ -282,7 +274,7 @@ public class MainAsyncRequests {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public Bitmap getImage(final String imageURL) {
+    public void getImage(final String imageURL) {
         Log.d(TAG, "imgurl = " + imageURL);
         new AsyncTask<Object, Object, Bitmap>() {
             @Override
@@ -311,11 +303,10 @@ public class MainAsyncRequests {
                     listener.setMainActivityProfilePicBitmap(result);
             }
         }.execute();
-        return null;
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void setProfileAudio(final String audioPath, final String username) throws Exception {
+    public void setProfileAudio(final String audioPath, final String username) {
         Log.d(TAG, "About to upload Image");
         new AsyncTask<JSONObject, Void, JSONObject>() {
 
